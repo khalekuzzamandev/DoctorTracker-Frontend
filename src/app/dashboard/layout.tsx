@@ -6,7 +6,7 @@ export default function DashboardLayout({
   children,
 }: LayoutProps<"/">) {
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen">
 
       {/* Sidebar */}
       <Sidebar />

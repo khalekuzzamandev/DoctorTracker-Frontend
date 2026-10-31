@@ -2,15 +2,11 @@
 
 import {
   Briefcase,
-  Code,
-  Envelope,
-  FileText,
-  Folder,
   Gear,
-  GraduationCap,
   House,
 } from "@gravity-ui/icons";
-import { Award, CircleUser, Menu, X } from "lucide-react";
+
+import {  CircleUser, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import Profile from "./Profile";
@@ -22,7 +18,7 @@ const navItems = [
   { icon: House, label: "Home", href: "/dashboard" },
   { icon: Briefcase, label: "Doctors", href: "/dashboard/admin/doctors" },
   { icon: FaBriefcaseMedical, label: "Patients", href: "/dashboard/admin/patients" },
-  { icon: CircleUser, label: "Profile", href: "/dashboard/admin/Profile" },
+  { icon: CircleUser, label: "Profile", href: "/dashboard/admin/profile" },
   { icon: Gear, label: "Settings", href: "/dashboard/admin/settings" },
 ];
 
@@ -34,7 +30,7 @@ const Sidebar = () => {
   return (
     <>
       {/* Mobile Header */}
-      <header className="fixed left-0 top-0 z-40 flex h-16 w-full items-center justify-between border-b border-white/10 bg-zinc-950 px-4 md:hidden">
+      <header className="fixed left-0 top-0 z-40 flex h-16 w-full items-center justify-between border-b border-white/10  px-4 md:hidden">
         <div>
 
           <h1 className="text-lg font-bold tracking-tight text-white">
@@ -48,7 +44,7 @@ const Sidebar = () => {
           type="button"
           onClick={() => setIsOpen(true)}
           aria-label="Open menu"
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-300 transition hover:bg-white/10 hover:text-white active:scale-95"
+          className="flex h-10 w-10 items-center justify-center rounded-xl border  active:scale-95"
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -66,7 +62,7 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-white/10 bg-zinc-950 px-5 py-6 shadow-2xl shadow-black/40 transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-white/10 bg-[#0466c8] px-5 py-6 shadow-2xl shadow-black/40 transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
           } md:translate-x-0`}
       >
         {/* Header */}
