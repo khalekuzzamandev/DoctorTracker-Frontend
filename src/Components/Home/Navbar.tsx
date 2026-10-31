@@ -1,8 +1,9 @@
-"use client"
 
-import Image from 'next/image';
-import React from 'react';
-import Link from 'next/link';
+"use client";
+
+import Image from "next/image";
+import React from "react";
+import Link from "next/link";
 
 import {
   Menu,
@@ -11,21 +12,50 @@ import {
   Users,
   Info,
   Phone,
-  LogIn,
   House,
   type LucideIcon,
- 
-} from 'lucide-react';
+  Search,
+} from "lucide-react";
 
-const Navbar = () => {
-  const navLinks = [
-    { name: 'Home', href: '/', icon: House },
-    { name: 'Doctors', href: '/doctors', icon: Stethoscope },
-    { name: 'Patients', href: '/patients', icon: Users },
-    { name: 'About', href: '/about', icon: Info },
-    { name: 'Contact', href: '/contact', icon: Phone },
+const navLinks: {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+}[] = [
+    { name: "Home", href: "/", icon: House },
+    { name: "Doctors", href: "/doctors", icon: Stethoscope },
+    { name: "Patients", href: "/patients", icon: Users },
+    { name: "About", href: "/about", icon: Info },
+    { name: "Contact", href: "/contact", icon: Phone },
   ];
 
+const SearchBar = () => {
+  return (
+    <form
+      action="/search"
+      method="GET"
+      className="relative w-full sm:w-52"
+    >
+      <input
+        type="search"
+        name="q"
+        placeholder="Search..."
+        aria-label="Search doctors and patients"
+        className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-4 pr-10 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+      />
+
+      <button
+        type="submit"
+        aria-label="Submit search"
+        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600"
+      >
+        <Search size={18} />
+      </button>
+    </form>
+  );
+};
+
+const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 shadow-sm backdrop-blur-xl">
       <nav className="mx-auto flex h-20 max-w-[1500px] items-center justify-between px-5 sm:px-8 lg:px-12">
@@ -34,7 +64,7 @@ const Navbar = () => {
         <Link href="/" className="flex shrink-0 items-center gap-3">
           <Image
             src="/icon.png"
-            alt="DoctorTraker Logo"
+            alt="DoctorTracker Logo"
             width={58}
             height={58}
             priority
@@ -45,6 +75,7 @@ const Navbar = () => {
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
               Doctor<span className="text-blue-600">Traker</span>
             </h1>
+
             <p className="text-[10px] font-semibold uppercase tracking-[2px] text-slate-500">
               Healthcare Management
             </p>
@@ -52,40 +83,38 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden items-center gap-8 lg:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 transition hover:text-blue-600"
-            >
-              <link.icon size={16} />
-              {link.name}
-            </Link>
-          ))}
+        <div className="hidden items-center gap-6 lg:flex xl:gap-8">
+          {navLinks.map((link) => {
+            const Icon = link.icon;
+
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 transition hover:text-blue-600"
+              >
+                <Icon size={16} />
+                {link.name}
+              </Link>
+            );
+          })}
         </div>
 
-        {/* Action Buttons */}
+        {/* Desktop Actions */}
         <div className="hidden items-center gap-3 md:flex">
+          <SearchBar />
+
           <Link
             href="/login"
-            className="flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700"
           >
-            <LogIn size={17} />
             Login
-          </Link>
-
-          <Link
-            href="/register"
-            className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700"
-          >
-            Get Started
           </Link>
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Menu */}
         <div className="md:hidden">
-          <MobileMenu navLinks={navLinks} />
+          <MobileMenu />
         </div>
 
       </nav>
@@ -93,12 +122,15 @@ const Navbar = () => {
   );
 };
 
-const MobileMenu = ({ navLinks }: { navLinks: { name: string; href: string; icon: LucideIcon }[] }) => {
+const MobileMenu = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
     <div className="relative">
+
+      {/* Menu Toggle Button */}
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Toggle navigation menu"
         aria-expanded={isOpen}
@@ -107,39 +139,42 @@ const MobileMenu = ({ navLinks }: { navLinks: { name: string; href: string; icon
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
+      {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 top-14 w-64 rounded-2xl border border-slate-100 bg-white p-4 shadow-2xl">
+        <div className="absolute right-0 top-14 z-50 w-[min(340px,calc(100vw-32px))] rounded-2xl border border-slate-100 bg-white p-4 shadow-2xl">
+
+          {/* Navigation Links */}
           <div className="flex flex-col gap-2">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
-              >
-                <link.icon size={18} />
-                {link.name}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+                >
+                  <Icon size={18} />
+                  {link.name}
+                </Link>
+              );
+            })}
           </div>
 
-          <div className="mt-3 flex flex-col gap-2 border-t border-slate-100 pt-3">
+          {/* Search & Login */}
+          <div className="mt-3 flex flex-col gap-3 border-t border-slate-100 pt-4">
+            <SearchBar />
+
             <Link
               href="/login"
               onClick={() => setIsOpen(false)}
-              className="rounded-xl px-4 py-3 text-center text-sm font-bold text-slate-700 hover:bg-blue-50"
+              className="flex items-center justify-center rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-blue-700"
             >
               Login
             </Link>
-
-            <Link
-              href="/register"
-              onClick={() => setIsOpen(false)}
-              className="rounded-xl bg-blue-600 px-4 py-3 text-center text-sm font-bold text-white hover:bg-blue-700"
-            >
-              Get Started
-            </Link>
           </div>
+
         </div>
       )}
     </div>
