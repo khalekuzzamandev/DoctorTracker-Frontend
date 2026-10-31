@@ -1,33 +1,28 @@
-import React from "react";
+
+import Sidebar from "@/Components/Dashboard/Sidebar";
+import Navbar from "@/Components/Dashboard/Navbar";
 
 export default function DashboardLayout({
   children,
 }: LayoutProps<"/">) {
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-black text-white">
 
-      {/* Sidebar Menu */}
-      <aside className="w-64 shrink-0 border-r bg-white">
-        Menu
-      </aside>
+      {/* Sidebar */}
+      <Sidebar />
 
-      {/* Right Content */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      {/* Main Content */}
+      <div className="min-h-screen md:ml-64">
 
         {/* Navbar */}
-        <header className="h-16 shrink-0 border-b bg-white">
-          Navbar
+        <header className="flex h-16 items-center border-b border-white/10 px-8">
+          <Navbar/>
         </header>
 
-        {/* Children */}
-        <main className="flex-1 p-6">
+        {/* Page Content */}
+        <main className="p-8">
           {children}
         </main>
-
-        {/* Footer */}
-        <footer className="border-t bg-white p-4">
-          Footer
-        </footer>
 
       </div>
     </div>
