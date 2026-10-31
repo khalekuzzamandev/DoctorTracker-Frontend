@@ -10,22 +10,19 @@ import {
   GraduationCap,
   House,
 } from "@gravity-ui/icons";
-import { Award, Menu, X } from "lucide-react";
+import { Award, CircleUser, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import Profile from "./Profile";
 import { IoReturnUpBackOutline } from "react-icons/io5";
 import { usePathname } from "next/navigation";
+import { FaBriefcaseMedical } from "react-icons/fa";
 
 const navItems = [
   { icon: House, label: "Home", href: "/dashboard" },
-  { icon: Briefcase, label: "Experience", href: "/dashboard/admin/experience" },
-  { icon: GraduationCap, label: "Education", href: "/dashboard/admin/education" },
-  { icon: Code, label: "Skills", href: "/dashboard/admin/skills" },
-  { icon: Folder, label: "Projects", href: "/dashboard/admin/projects" },
-  { icon: Award, label: "Certificates", href: "/dashboard/admin/certificates" },
-  { icon: FileText, label: "Resume", href: "/dashboard/admin/resume" },
-  { icon: Envelope, label: "Messages", href: "/dashboard/admin/messages" },
+  { icon: Briefcase, label: "Doctors", href: "/dashboard/admin/doctors" },
+  { icon: FaBriefcaseMedical, label: "Patients", href: "/dashboard/admin/patients" },
+  { icon: CircleUser, label: "Profile", href: "/dashboard/admin/Profile" },
   { icon: Gear, label: "Settings", href: "/dashboard/admin/settings" },
 ];
 
