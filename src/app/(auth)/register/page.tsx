@@ -14,6 +14,7 @@ import {
   HeartPulse,
   ArrowRight,
 } from "lucide-react";
+import { authClient } from "@/Components/lib/auth-client";
 
 const Register = () => {
   const router = useRouter();
@@ -29,7 +30,7 @@ const Register = () => {
     confirmPassword: "",
     role: "admin",
   });
-
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -39,7 +40,7 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
@@ -53,11 +54,27 @@ const Register = () => {
       return;
     }
 
-    // Connect your registration API here.
-    console.log("Registration Data:", formData);
+    setLoading(true);
+    try {
+      const result = await authClient.signUp.email({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
 
-    alert("Registration form submitted successfully!");
-    router.push("/login");
+      if (result.error) {
+        setError(result.error.message || "Registration failed.");
+        return;
+      }
+
+      console.log("Registration successful", result);
+      alert("Registration form submitted successfully!");
+      router.push("/login");
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputClass =
@@ -170,21 +187,7 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Account Type */}
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
-                Account Type
-              </label>
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              >
-                <option value="admin">Admin</option>
-              </select>
-            </div>
-
+          
             {/* Password */}
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700">
@@ -249,9 +252,10 @@ const Register = () => {
             {/* Submit */}
             <button
               type="submit"
+              disabled={loading}
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700"
             >
-              Create Account
+              {loading ? "Creating Account..." : "Create Account"}
               <ArrowRight size={18} />
             </button>
           </form>
