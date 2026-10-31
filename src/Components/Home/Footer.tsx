@@ -1,4 +1,4 @@
-
+"use client"
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -10,8 +10,13 @@ import {
 } from 'lucide-react';
 import { FaFacebook, FaGithub } from 'react-icons/fa';
 import { LiaLinkedin } from 'react-icons/lia';
+import { usePathname } from 'next/navigation';
 
 const Footer = () => {
+   const pathname = usePathname()
+    if (pathname.includes('dashboard')) {
+      return null
+    }
   return (
     <footer className="bg-slate-950 text-slate-300">
 
