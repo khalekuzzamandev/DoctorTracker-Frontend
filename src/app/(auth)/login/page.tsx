@@ -12,6 +12,7 @@ import {
   HeartPulse,
   ArrowRight,
 } from "lucide-react";
+import { authClient } from "@/Components/lib/auth-client";
 
 const Login = () => {
   const router = useRouter();
@@ -19,7 +20,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -32,18 +33,33 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    setLoading(true);
     setError("");
 
-    // Connect your login API here.
-    console.log("Login Data:", {
-      ...formData,
-      rememberMe,
-    });
+    const formData = new FormData(e.currentTarget);
 
-    alert("Login form submitted successfully!");
-    router.push("/dashboard");
+    const email = String(formData.get("email") || "").trim();
+    const password = String(formData.get("password") || "");
+
+    try {
+      const { error } = await authClient.signIn.email({
+        email,
+        password,
+        callbackURL: "/",
+      });
+
+      if (error) {
+        setError(error.message || "Invalid email or password.");
+      }
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputClass =
