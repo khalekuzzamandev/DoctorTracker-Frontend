@@ -60,6 +60,7 @@ const Register = () => {
         name: formData.name,
         email: formData.email,
         password: formData.password,
+        phone: formData.phone,
       });
 
       if (result.error) {
