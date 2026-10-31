@@ -11,6 +11,7 @@ import {
   Stethoscope,
   Users,
 } from "lucide-react";
+import Link from "next/link";
 
 const doctors = [
   {
@@ -117,10 +118,10 @@ const DoctorsPage = () => {
           </p>
         </div>
 
-        <button className="flex items-center justify-center gap-2 rounded-xl bg-[#0466c8] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700">
+        <Link href={'/dashboard/admin/doctors/add-doctor'} className="flex items-center justify-center gap-2 rounded-xl bg-[#0466c8] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700">
           <Plus size={18} />
           Add Doctor
-        </button>
+        </Link>
       </div>
 
       {/* Summary Cards */}
