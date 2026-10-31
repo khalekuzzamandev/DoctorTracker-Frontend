@@ -12,6 +12,7 @@ import {
   UserRound,
   Activity,
 } from "lucide-react";
+import Link from "next/link";
 
 const patients = [
   {
@@ -99,10 +100,10 @@ const Patient = () => {
           </p>
         </div>
 
-        <button className="flex items-center justify-center gap-2 rounded-xl bg-[#0466c8] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700">
+        <Link href={'/dashboard/admin/patients/add-patient'} className="flex items-center justify-center gap-2 rounded-xl bg-[#0466c8] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700">
           <Plus size={18} />
           Add Patient
-        </button>
+        </Link>
 
       </div>
 
