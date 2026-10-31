@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -6,7 +7,7 @@ import {
   House,
 } from "@gravity-ui/icons";
 
-import {  CircleUser, Menu, X } from "lucide-react";
+import { CircleUser, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import Profile from "./Profile";
@@ -26,25 +27,26 @@ const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
-
   return (
     <>
       {/* Mobile Header */}
-      <header className="fixed left-0 top-0 z-40 flex h-16 w-full items-center justify-between border-b border-white/10  px-4 md:hidden">
-        <div>
+      <header className="fixed left-0 top-0 z-40 flex h-16 w-full items-center justify-between border-b border-white/10 bg-[#071A35] px-5 shadow-lg shadow-black/10 md:hidden">
 
-          <h1 className="text-lg font-bold tracking-tight text-white">
-            Portfolio<span className="text-purple-500">.</span>
+        <div>
+          <h1 className="text-xl font-bold tracking-tight text-white">
+            Portfolio<span className="text-blue-400">.</span>
           </h1>
 
-          <p className="text-[10px] text-zinc-500">Admin Dashboard</p>
+          <p className="mt-0.5 text-[10px] font-medium uppercase tracking-[0.2em] text-blue-200/60">
+            Admin Dashboard
+          </p>
         </div>
 
         <button
           type="button"
           onClick={() => setIsOpen(true)}
           aria-label="Open menu"
-          className="flex h-10 w-10 items-center justify-center rounded-xl border  active:scale-95"
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white transition-all duration-200 hover:bg-white/10 active:scale-95"
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -56,49 +58,62 @@ const Sidebar = () => {
           type="button"
           aria-label="Close menu"
           onClick={() => setIsOpen(false)}
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm md:hidden"
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-white/10 bg-[#0466c8] px-5 py-6 shadow-2xl shadow-black/40 transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
-          } md:translate-x-0`}
+        className={`fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-white/10 bg-[#002855] px-4 py-6 shadow-2xl shadow-slate-950/30 transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
+          } md:sticky md:top-0 md:translate-x-0`}
       >
+
         {/* Header */}
-        <div className="mb-10 flex items-start justify-between px-3">
-          <div className="flex items-center gap-4">
-            <Link href={'/'}
-              type="button"
-              className="group flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-br from-white/10 to-white/[0.02] text-zinc-400 shadow-lg shadow-black/20 transition-all duration-200 hover:border-purple-500/40 hover:text-purple-400 cursor-pointer"
+        <div className="mb-10 flex items-start justify-between px-2">
+
+          <div className="flex items-center gap-3">
+
+            <Link
+              href="/"
+              className="group flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.06] text-blue-200 shadow-lg transition-all duration-200 hover:border-blue-400/40 hover:bg-blue-500/10 hover:text-white"
             >
-              <IoReturnUpBackOutline className="text-lg " />
+              <IoReturnUpBackOutline className="text-xl transition-transform duration-200 group-hover:-translate-x-0.5" />
             </Link>
 
             <div>
-              <h1 className="text-xl font-semibold tracking-tight text-white">
-                Portfolio<span className="text-purple-500">.</span>
+              <h1 className="text-xl font-bold tracking-tight text-white">
+                Portfolio<span className="text-blue-400">.</span>
               </h1>
 
-              <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+              <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
                 Admin Dashboard
               </p>
             </div>
+
           </div>
 
-          {/* Close button - Mobile only */}
+          {/* Close Button */}
           <button
             type="button"
             onClick={() => setIsOpen(false)}
             aria-label="Close menu"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-500 transition hover:bg-white/5 hover:text-white md:hidden"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-white/10 hover:text-white md:hidden"
           >
             <X className="h-5 w-5" />
           </button>
+
+        </div>
+
+        {/* Navigation Label */}
+        <div className="mb-3 px-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+            Main Menu
+          </p>
         </div>
 
         {/* Navigation */}
-        <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto">
+        <nav className="flex flex-1 flex-col gap-2 overflow-y-auto">
+
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActiveRoute = pathname === item.href;
@@ -108,31 +123,44 @@ const Sidebar = () => {
                 key={item.label}
                 href={item.href}
                 onClick={() => setIsOpen(false)}
-                className={`group flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium transition-all duration-200 ${isActiveRoute
-                  ? "border-orange-500/8 text-white shadow"
-                  : "border-transparent text-zinc-400 hover:border-white/10 hover:text-white"
+                className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border px-4 py-3.5 text-sm font-medium transition-all duration-200 ${isActiveRoute
+                    ? "border-blue-400/20 bg-blue-500/15 text-white shadow-lg shadow-blue-950/20"
+                    : "border-transparent text-white hover:border-white/10 hover:bg-white/[0.06] hover:text-white"
                   }`}
               >
+
+                {/* Active Indicator */}
+                {isActiveRoute && (
+                  <span className="absolute bottom-2 left-0 top-2 w-1 rounded-r-full bg-blue-400" />
+                )}
+
                 <Icon
-                  className={`size-5 shrink-0 transition-colors duration-200 ${isActiveRoute
-                    ? "text-orange-500"
-                    : "text-zinc-500 group-hover:text-orange-400"
+                  className={`size-5 shrink-0 transition-all duration-200 ${isActiveRoute
+                      ? "text-blue-400"
+                      : "text-slate-500 group-hover:text-blue-300"
                     }`}
                 />
 
-                <span>{item.label}</span>
+                <span className="flex-1">{item.label}</span>
+
+                {isActiveRoute && (
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]" />
+                )}
+
               </Link>
             );
           })}
+
         </nav>
 
         {/* Profile */}
-        <div className="mt-6 border-t border-white/5 pt-4">
+        <div className="mt-6 border-t border-white/10 pt-5">
           <Profile />
         </div>
+
       </aside>
 
-      {/* Mobile top spacing */}
+      {/* Mobile Top Spacing */}
       <div className="h-16 md:hidden" />
     </>
   );

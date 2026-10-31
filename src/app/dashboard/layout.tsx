@@ -6,21 +6,16 @@ export default function DashboardLayout({
   children,
 }: LayoutProps<"/">) {
   return (
-    <div className="min-h-screen">
-
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
 
-      {/* Main Content */}
-      <div className="min-h-screen md:ml-64">
+      <div className="flex min-w-0 flex-1 flex-col pt-16 md:pt-0">
 
-        {/* Navbar */}
-        <header className="flex h-16 items-center border-b border-white/10 px-8">
-          <Navbar/>
+        <header className="sticky top-0 z-30 shrink-0 border-b bg-white">
+          <Navbar />
         </header>
 
-        {/* Page Content */}
-        <main className="p-8">
+        <main className="min-w-0 flex-1">
           {children}
         </main>
 
