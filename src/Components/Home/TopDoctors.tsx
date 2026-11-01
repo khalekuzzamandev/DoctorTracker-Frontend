@@ -1,41 +1,54 @@
+"use client";
 
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowRight, BadgeCheck, Stethoscope } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  BadgeCheck,
+  Stethoscope,
+  Loader2,
+} from "lucide-react";
 
-const doctors = [
-  {
-    id: 1,
-    name: 'Dr. Sarah Johnson',
-    specialty: 'Cardiologist',
-    description: 'Heart and cardiovascular specialist.',
-    image: '/doctors/doctor-1.jpg',
-  },
-  {
-    id: 2,
-    name: 'Dr. Michael Smith',
-    specialty: 'Neurologist',
-    description: 'Brain and nervous system specialist.',
-    image: '/doctors/doctor-2.jpg',
-  },
-  {
-    id: 3,
-    name: 'Dr. Emily Wilson',
-    specialty: 'Dermatologist',
-    description: 'Skin and hair care specialist.',
-    image: '/doctors/doctor-3.jpg',
-  },
-  {
-    id: 4,
-    name: 'Dr. James Anderson',
-    specialty: 'Orthopedic Surgeon',
-    description: 'Bone and joint specialist.',
-    image: '/doctors/doctor-4.jpg',
-  },
-];
+interface Doctor {
+  _id: string;
+  name: string;
+  specialization?: string;
+  qualification?: string;
+  hospital?: string;
+  experience?: number;
+  consultationFee?: number;
+}
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 const TopDoctors = () => {
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const res = await fetch(`${baseUrl}/api/get/doctor`, {
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch doctors");
+        }
+
+        const data = await res.json();
+
+        setDoctors(Array.isArray(data) ? data.slice(0, 4) : []);
+      } catch (error) {
+        console.error("Doctor fetch error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
   return (
     <section className="bg-slate-50 px-5 py-16 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
@@ -57,61 +70,110 @@ const TopDoctors = () => {
           </p>
         </div>
 
-        {/* Doctors Grid */}
-        <div className="grid gap-5 md:grid-cols-2">
+        {/* Loading */}
+        {loading && (
+          <div className="grid gap-5 md:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="flex animate-pulse items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4"
+              >
+                <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-slate-200">
+                  <Stethoscope className="text-slate-400" size={35} />
+                </div>
 
-          {doctors.map((doctor) => (
-            <div
-              key={doctor.id}
-              className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg sm:gap-5 sm:p-4"
-            >
-
-              {/* Doctor Image */}
-              <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-blue-50 sm:h-28 sm:w-28">
-                <Image
-                  src={doctor.image}
-                  alt={doctor.name}
-                  fill
-                  sizes="112px"
-                  className="object-cover object-top transition duration-500 group-hover:scale-105"
-                />
+                <div className="flex-1 space-y-3">
+                  <div className="h-4 w-32 rounded bg-slate-200" />
+                  <div className="h-3 w-24 rounded bg-slate-200" />
+                  <div className="h-3 w-full rounded bg-slate-200" />
+                </div>
               </div>
+            ))}
+          </div>
+        )}
 
-              {/* Doctor Information */}
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <h3 className="truncate text-base font-bold text-slate-900 sm:text-lg">
-                    {doctor.name}
-                  </h3>
-                  <BadgeCheck
-                    size={17}
-                    className="shrink-0 text-blue-500"
+        {/* Doctors Grid */}
+        {!loading && doctors.length > 0 && (
+          <div className="grid gap-5 md:grid-cols-2">
+            {doctors.map((doctor) => (
+              <div
+                key={doctor._id}
+                className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg sm:gap-5"
+              >
+                {/* Doctor Icon */}
+                <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-blue-50 transition duration-300 group-hover:bg-blue-100 sm:h-28 sm:w-28">
+                  <Stethoscope
+                    size={42}
+                    strokeWidth={1.5}
+                    className="text-blue-600 transition duration-300 group-hover:scale-110"
                   />
                 </div>
 
-                <p className="mt-1 text-sm font-semibold text-blue-600">
-                  {doctor.specialty}
-                </p>
+                {/* Doctor Information */}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="truncate text-base font-bold text-slate-900 sm:text-lg">
+                      {doctor.name}
+                    </h3>
 
-                <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500 sm:text-sm">
-                  {doctor.description}
-                </p>
+                    <BadgeCheck
+                      size={17}
+                      className="shrink-0 text-blue-500"
+                    />
+                  </div>
+
+                  <p className="mt-1 text-sm font-semibold text-blue-600">
+                    {doctor.specialization || "General Physician"}
+                  </p>
+
+                  <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500 sm:text-sm">
+                    {doctor.qualification || "Medical Professional"}
+                  </p>
+
+                  {doctor.experience !== undefined && (
+                    <p className="mt-1 text-xs text-slate-500">
+                      {doctor.experience} Years Experience
+                    </p>
+                  )}
+
+                  {doctor.hospital && (
+                    <p className="mt-1 truncate text-xs text-slate-500">
+                      {doctor.hospital}
+                    </p>
+                  )}
+                </div>
+
+                {/* View Profile */}
+                <Link
+                  href={`/doctors/${doctor._id}`}
+                  className="flex shrink-0 items-center gap-1 rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition hover:bg-blue-600 hover:text-white sm:px-4 sm:py-2.5 sm:text-sm"
+                >
+                  <span className="hidden sm:inline">View Profile</span>
+                  <span className="sm:hidden">View</span>
+                  <ArrowRight size={15} />
+                </Link>
               </div>
+            ))}
+          </div>
+        )}
 
-              {/* View Profile */}
-              <Link
-                href={`/ doctors / ${ doctor.id } `}
-                className="flex shrink-0 items-center gap-1 rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition hover:bg-blue-600 hover:text-white sm:px-4 sm:py-2.5 sm:text-sm"
-              >
-                <span className="hidden sm:inline">View Profile</span>
-                <span className="sm:hidden">View</span>
-                <ArrowRight size={15} />
-              </Link>
+        {/* Empty State */}
+        {!loading && doctors.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-12 text-center">
+            <Stethoscope
+              className="mx-auto text-slate-400"
+              size={40}
+            />
 
-            </div>
-          ))}
+            <h3 className="mt-4 text-lg font-bold text-slate-800">
+              No Doctors Available
+            </h3>
 
-        </div>
+            <p className="mt-2 text-sm text-slate-500">
+              Doctors will appear here once they are added.
+            </p>
+          </div>
+        )}
 
         {/* View All */}
         <div className="mt-9 text-center">
