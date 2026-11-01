@@ -33,10 +33,9 @@ const Sidebar = () => {
       <header className="fixed left-0 top-0 z-40 flex h-16 w-full items-center justify-between border-b border-white/10 bg-[#071A35] px-5 shadow-lg shadow-black/10 md:hidden">
 
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-white">
-            Portfolio<span className="text-blue-400">.</span>
+          <h1 className="text-2xl font-extrabold tracking-tight text-white">
+            Doctor<span className="text-blue-600">Traker</span>
           </h1>
-
           <p className="mt-0.5 text-[10px] font-medium uppercase tracking-[0.2em] text-blue-200/60">
             Admin Dashboard
           </p>
@@ -81,8 +80,8 @@ const Sidebar = () => {
             </Link>
 
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-white">
-                Portfolio<span className="text-blue-400">.</span>
+              <h1 className="text-2xl font-extrabold tracking-tight text-white">
+                Doctor<span className="text-blue-600">Traker</span>
               </h1>
 
               <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
