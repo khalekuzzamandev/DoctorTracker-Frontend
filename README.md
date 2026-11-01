@@ -34,6 +34,17 @@ Clients can create and manage tasks, freelancers can apply and complete projects
 
 ---
 
+## 🔐 Admin Access
+
+| Field | Value |
+|------|------|
+| Email | admin@gmail.com |
+| Password | 12345678 |
+
+---
+
+---
+
 # 🚀 Live Project
 
 ### Live Website
@@ -50,16 +61,7 @@ Clients can create and manage tasks, freelancers can apply and complete projects
 
 ---
 
----
 
-## 🔐 Admin Access
-
-| Field | Value |
-|------|------|
-| Email | admin@gmail.com |
-| Password | 12345678 |
-
----
 
 ## ✨ Features
 
