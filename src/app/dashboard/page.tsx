@@ -221,7 +221,11 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    fetchDashboardData();
+    const timeoutId = window.setTimeout(() => {
+      void fetchDashboardData();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, [fetchDashboardData]);
 
   // Statistics
