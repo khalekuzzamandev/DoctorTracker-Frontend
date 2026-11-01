@@ -1,40 +1,63 @@
-# Doctor Tracker - Doctor Management System
+# GiGNEX - Freelance Micro-Task Platform
 
-![Doctor Tracker Dashboard](./screenshot.png)
+<p align="center">
+  <img src="./src/adminoverview.png" alt="SkillSwap Dashboard Overview" width="100%" />
+</p>
 
-<div align="center">
+<h3 align="center">
+A Full Stack Freelance Marketplace Platform
+</h3>
 
-### A Full Stack Doctor Management Platform
-
-[![LIVE](https://img.shields.io/badge/LIVE-DEMO-brightgreen)](https://doctor-tracker-frontend-51wb.vercel.app/)
-[![CLIENT](https://img.shields.io/badge/CLIENT-REPOSITORY-blue)](https://github.com/khalekuzzamandev/DoctorTracker-Frontend)
-[![SERVER](https://img.shields.io/badge/SERVER-REPOSITORY-orange)](https://github.com/khalekuzzamandev/DoctorTracker-Backend)
-
-</div>
-
----
-
-## ⭐ Project Overview
-
-Doctor Tracker is a modern full stack web application for managing and tracking doctors' information. Users can view, add, and manage doctor records through a clean, responsive interface backed by a REST API.
-
-The platform is built with a separate frontend and backend:
-
-- Client (Frontend)
-- Server (Backend API)
-
-The frontend provides an intuitive interface for browsing and managing doctors, while the backend exposes REST endpoints for storing and retrieving doctor data.
+<p align="center">
+  <a href="[https://gi-gnex.vercel.app/](https://doctor-tracker-frontend-51wb.vercel.app/)">
+    <img src="https://img.shields.io/badge/Live-Demo-success?style=for-the-badge" />
+  </a>
+  <a href="[https://github.com/muradvcv/GiGNEX](https://github.com/khalekuzzamandev/DoctorTracker-Frontend)">
+    <img src="https://img.shields.io/badge/Client-Repository-blue?style=for-the-badge" />
+  </a>
+  <a href="[https://github.com/muradvcv/GiGNEX-BACKEND](https://github.com/khalekuzzamandev/DoctorTracker-Backend)">
+    <img src="https://img.shields.io/badge/Server-Repository-orange?style=for-the-badge" />
+  </a>
+</p>
 
 ---
 
-## 🔗 Important Links
+# 🌟 Project Overview
 
-| Resource | Link |
-|----------|------|
-| Live Frontend | [doctor-tracker-frontend-51wb.vercel.app](https://doctor-tracker-frontend-51wb.vercel.app/) |
-| Live Backend API | [/api/get/doctor](https://doctor-tracker-backend-kappa.vercel.app/api/get/doctor) |
-| Frontend Repository | [DoctorTracker-Frontend](https://github.com/khalekuzzamandev/DoctorTracker-Frontend) |
-| Backend Repository | [DoctorTracker-Backend](https://github.com/khalekuzzamandev/DoctorTracker-Backend) |
+GiGNEX is a modern Freelance Micro-Task Marketplace where clients can post small tasks and freelancers can submit proposals, get hired, complete work, and receive payments securely.
+
+The platform supports three different user roles:
+
+* Admin
+
+Clients can create and manage tasks, freelancers can apply and complete projects, and admins can monitor platform activities, users, tasks, and transactions.
+
+---
+
+# 🚀 Live Project
+
+### Live Website
+
+[https://gi-gnex.vercel.app/](https://doctor-tracker-frontend-51wb.vercel.app/)
+
+### Client Repository
+
+[https://github.com/muradvcv/GiGNEX](https://github.com/khalekuzzamandev/DoctorTracker-Frontend)
+
+### Server Repository
+
+[https://github.com/muradvcv/GiGNEX-BACKEND](https://github.com/khalekuzzamandev/DoctorTracker-Backend)
+
+---
+
+---
+
+## 🔐 Admin Access
+
+| Field | Value |
+|------|------|
+| Email | admin@gmail.com |
+| Password | 12345678 |
 
 ---
 
