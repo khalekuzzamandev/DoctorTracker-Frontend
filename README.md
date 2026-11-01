@@ -1,11 +1,11 @@
-# GiGNEX - Freelance Micro-Task Platform
+# DoctorTracker – Doctor Management System
 
 <p align="center">
   <img src="[./src/adminoverview.png](https://i.ibb.co.com/4wHMZpNK/image.png)" alt="SkillSwap Dashboard Overview" width="100%" />
 </p>
 
 <h3 align="center">
-A Full Stack Freelance Marketplace Platform
+ A Full Stack Doctor Management Platform
 </h3>
 
 <p align="center">
@@ -24,13 +24,9 @@ A Full Stack Freelance Marketplace Platform
 
 # 🌟 Project Overview
 
-GiGNEX is a modern Freelance Micro-Task Marketplace where clients can post small tasks and freelancers can submit proposals, get hired, complete work, and receive payments securely.
+DoctorTracker is a modern Full Stack Doctor Management System designed to manage doctor records efficiently. It allows users to view, add, update, and delete doctor information through an intuitive and responsive interface.
 
-The platform supports three different user roles:
-
-* Admin
-
-Clients can create and manage tasks, freelancers can apply and complete projects, and admins can monitor platform activities, users, tasks, and transactions.
+The platform provides an organized way to manage doctor information and streamline doctor record management.
 
 ---
 
