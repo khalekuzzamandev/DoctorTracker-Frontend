@@ -66,7 +66,7 @@ export async function addDoctor(doctor: Doctor): Promise<ActionResult> {
 }
 
 
-
+// get doctor
 export const getDoctor = async () => {
   const res = await fetch(`${baseUrl}/api/get/doctor`, {
     cache: "no-store",

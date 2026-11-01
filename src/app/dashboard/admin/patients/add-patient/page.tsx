@@ -1,596 +1,654 @@
+
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { getDoctor } from "@/Components/lib/actions/doctors";
+import { addPatient } from "@/Components/lib/actions/patient";
+
 import {
   UserRound,
-  Stethoscope,
-  Building2,
   Phone,
-  Mail,
-  GraduationCap,
-  BriefcaseBusiness,
-  MapPin,
-  Wallet,
-  CalendarDays,
-  Camera,
-  ArrowLeft,
-  Save,
-  Upload,
   HeartPulse,
-  BadgeCheck,
-  Clock,
-  Hash,
+  Save,
+  Stethoscope,
+  ArrowLeft,
+  ClipboardList,
+  Mail,
+  MapPin,
+  CalendarDays,
+  Droplet,
+  ShieldCheck,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react";
 
-import {
-  addDoctor,
-  type Doctor,
-  type DoctorStatus,
-  type DoctorGender,
-} from "@/Components/lib/actions/doctors";
+interface DoctorType {
+  _id: string;
+  name: string;
+  email: string;
+  specialization: string;
+  status: string;
+}
 
-type DoctorFormData = Omit<Doctor, "experience" | "consultationFee"> & {
-  experience: string;
-  consultationFee: string;
-};
+interface PatientFormData {
+  name: string;
+  gender: string;
+  age: string;
+  phone: string;
+  email: string;
+  bloodGroup: string;
+  address: string;
+  medicalCondition: string;
+  otherCondition: string;
+  doctorId: string;
+  doctorName: string;
+  doctorEmail: string;
+  appointmentDate: string;
+  status: string;
+}
 
-const initialFormData: DoctorFormData = {
-  name: "",
-  specialization: "",
-  gender: "",
-  doctorId: "",
-  hospital: "",
-  phone: "",
-  email: "",
-  chamberAddress: "",
-  qualification: "",
-  experience: "",
-  consultationFee: "",
-  joiningDate: "",
-  availableDays: [],
-  status: "Active",
-  profileImage:null,
-};
+const AddPatient = () => {
+  const router = useRouter();
 
-const specializations = [
-  "Cardiologist",
-  "Neurologist",
-  "Dermatologist",
-  "Medicine Specialist",
-  "Orthopedic",
-  "Gynecologist",
-  "Pediatrician",
-  "Dentist",
-  "Psychiatrist",
-  "Ophthalmologist",
-  "ENT Specialist",
-  "Urologist",
-];
+  const [doctors, setDoctors] = useState<DoctorType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState("");
 
-const days = [
-  "Saturday",
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-];
+  const [formData, setFormData] = useState<PatientFormData>({
+    name: "",
+    gender: "",
+    age: "",
+    phone: "",
+    email: "",
+    bloodGroup: "",
+    address: "",
+    medicalCondition: "",
+    otherCondition: "",
+    doctorId: "",
+    doctorName: "",
+    doctorEmail: "",
+    appointmentDate: "",
+    status: "Active",
+  });
 
-const inputClass =
-  "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-700 outline-none transition-all placeholder:text-slate-400 focus:border-cyan-600 focus:bg-white focus:ring-4 focus:ring-cyan-600/10";
+  // Styles
+  const inputClass =
+    "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-50";
 
-const labelClass = "mb-2 block text-sm font-semibold text-slate-700";
+  const labelClass =
+    "mb-1.5 block text-sm font-semibold text-slate-700";
 
-const Section = ({
-  icon: Icon,
-  title,
-  subtitle,
-  children,
-}: {
-  icon: React.ElementType;
-  title: string;
-  subtitle: string;
-  children: React.ReactNode;
-}) => (
-  <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">
-    <div className="flex items-center gap-4 border-b border-cyan-100 bg-cyan-50 px-6 py-5">
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-cyan-700 text-white shadow-sm">
-        <Icon size={23} />
-      </div>
-
-      <div>
-        <h2 className="text-lg font-bold text-cyan-950">{title}</h2>
-        <p className="mt-1 text-xs text-slate-500">{subtitle}</p>
-      </div>
-    </div>
-
-    <div className="p-6 sm:p-8">{children}</div>
-  </section>
-);
-
-const Field = ({
-  title,
-  icon: Icon,
-  children,
-}: {
-  title: string;
-  icon: React.ElementType;
-  children: React.ReactNode;
-}) => (
-  <div>
-    <label className={labelClass}>{title}</label>
-
-    <div className="relative">
-      <Icon
-        className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-cyan-700"
-        size={18}
-      />
-      {children}
-    </div>
-  </div>
-);
-
-const AddDoctor = () => {
-  const [doctorData, setDoctorData] =
-    useState<DoctorFormData>(initialFormData);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Clean up preview URL to avoid memory leaks
+  // Fetch Doctors
   useEffect(() => {
-    return () => {
-      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    const fetchDoctors = async () => {
+      try {
+        const data = await getDoctor();
+        setDoctors(data);
+      } catch (error) {
+        console.error("Failed to load doctors:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-  }, [imagePreview]);
 
-  // Handle input and select fields
+    fetchDoctors();
+  }, []);
+
+  // Handle Input Change
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
 
-    setDoctorData((prev) => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
+      ...(name === "medicalCondition" && value !== "Other"
+        ? { otherCondition: "" }
+        : {}),
     }));
   };
 
-  // Handle available days
-  const handleDayChange = (day: string) => {
-    setDoctorData((prev) => ({
+  // Handle Doctor Selection
+  const handleDoctorChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedDoctor = doctors.find(
+      (doctor) => doctor._id === e.target.value
+    );
+
+    setFormData((prev) => ({
       ...prev,
-      availableDays: prev.availableDays.includes(day)
-        ? prev.availableDays.filter((item) => item !== day)
-        : [...prev.availableDays, day],
+      doctorId: selectedDoctor?._id || "",
+      doctorName: selectedDoctor?.name || "",
+      doctorEmail: selectedDoctor?.email || "",
     }));
   };
 
-  // Handle profile image
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-
-    if (!file) return;
-
-    if (!["image/png", "image/jpeg"].includes(file.type)) {
-      setError("Only PNG, JPG or JPEG images are allowed");
-      e.target.value = "";
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Image size must be less than 5MB");
-      e.target.value = "";
-      return;
-    }
-
-    setError("");
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
-  };
-
-  // Reset form
-  const handleReset = () => {
-    setDoctorData(initialFormData);
-    setImageFile(null);
-    setImagePreview(null);
-    setMessage("");
-    setError("");
-
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
-
-  // Submit doctor data
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  // Submit Form
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
-
-    setLoading(true);
-    setMessage("");
-    setError("");
+    setSubmitting(true);
+    setSuccess("");
 
     try {
-      const submittedData: Doctor = {
-        ...doctorData,
-        name: doctorData.name.trim(),
-        hospital: doctorData.hospital.trim(),
-        phone: doctorData.phone.trim(),
-        email: doctorData.email.trim().toLowerCase(),
-        gender: doctorData.gender as DoctorGender | "",
-        status: doctorData.status as DoctorStatus,
-        experience: Number(doctorData.experience) || 0,
-        consultationFee: Number(doctorData.consultationFee) || 0,
-        // TODO: Cloudinary upload korar por URL ekhane set korbe
-        // (imageFile ke upload kore secure_url pathao)
-        profileImage: null,
+      const { otherCondition, ...rest } = formData;
+
+      const patientData = {
+        ...rest,
+        age: Number(formData.age),
+        medicalCondition:
+          formData.medicalCondition === "Other"
+            ? otherCondition.trim()
+            : formData.medicalCondition,
       };
 
-      const result = await addDoctor(submittedData);
+      const result = await addPatient(patientData);
 
-      if (result.success) {
-        setMessage(result.message || "Doctor added successfully!");
-        handleReset();
-        setMessage(result.message || "Doctor added successfully!");
+      if (result.insertedId) {
+        setSuccess("Patient added successfully!");
+
+        setTimeout(() => {
+          router.push("/dashboard/admin/patients");
+          router.refresh();
+        }, 1200);
       } else {
-        setError(result.message || "Failed to add doctor");
+        throw new Error("Patient was not added");
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong!");
+    } catch (error) {
+      console.error("Failed to add patient:", error);
+      alert("Failed to add patient. Please try again.");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
+  const activeDoctors = doctors.filter(
+    (doctor) => doctor.status === "Active"
+  );
+
   return (
-    <div className="min-h-screen bg-[#f0fafa] px-4 py-8 sm:px-6 lg:px-10">
-      <div className="mx-auto max-w-5xl">
+    <div className="min-h-screen bg-slate-50 p-3 sm:p-5 lg:p-7">
+
+      <div className="mx-auto max-w-4xl space-y-5">
+
         {/* Header */}
-        <div className="mb-8 overflow-hidden rounded-3xl bg-cyan-800 p-7 text-white shadow-lg shadow-cyan-900/10 sm:p-9">
-          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-            <div>
-              <Link
-                href="/dashboard/doctors"
-                className="mb-5 inline-flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm text-white transition hover:bg-white/20"
-              >
-                <ArrowLeft size={16} />
-                Back to Doctors
-              </Link>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
-              <div className="flex items-center gap-2 text-sm font-medium text-cyan-100">
-                <HeartPulse size={17} />
-                Doctor Management
-              </div>
+          <div>
+            <Link
+              href="/dashboard/admin/patients"
+              className="mb-3 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 hover:shadow-md active:scale-95"
+            >
+              <ArrowLeft size={16} />
+              Back to Patients
+            </Link>
 
-              <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-                Add New Doctor
-              </h1>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-800">
+              Add New Patient
+            </h1>
 
-              <p className="mt-3 max-w-lg text-sm leading-6 text-cyan-100">
-                Register a new healthcare professional and manage their
-                information, qualifications and availability.
-              </p>
-            </div>
-
-            <div className="hidden h-28 w-28 items-center justify-center rounded-3xl border border-white/20 bg-white/10 sm:flex">
-              <Stethoscope size={58} strokeWidth={1.5} />
-            </div>
+            <p className="mt-1 text-sm text-slate-500">
+              Register a patient and assign a healthcare professional.
+            </p>
           </div>
 
-          <div className="mt-7 flex flex-wrap gap-3">
-            <span className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold">
-              <BadgeCheck className="mr-1 inline" size={14} />
-              Secure Registration
-            </span>
-
-            <span className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold">
-              <UserRound className="mr-1 inline" size={14} />
-              Doctor Profile
-            </span>
+          <div className="flex w-fit items-center gap-2 rounded-xl border border-blue-100 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700">
+            <ShieldCheck size={16} />
+            Secure Patient Registration
           </div>
+
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-7">
+        {/* Success Message */}
+        {success && (
+          <div className="flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 p-3 text-sm font-medium text-green-700">
+            <CheckCircle2 size={18} />
+            {success}
+          </div>
+        )}
+
+        {/* Main Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+        >
+
           {/* Personal Information */}
-          <Section
-            icon={UserRound}
-            title="Personal Information"
-            subtitle="Basic information about the doctor"
-          >
-            <div className="grid gap-6 sm:grid-cols-2">
-              <Field title="Doctor Name *" icon={UserRound}>
+          <section className="border-b border-slate-100 p-4 sm:p-6">
+
+            <div className="mb-5 flex items-center gap-3">
+              <div className="rounded-xl bg-blue-50 p-2.5 text-blue-600">
+                <UserRound size={20} />
+              </div>
+
+              <div>
+                <h2 className="font-bold text-slate-800">
+                  Personal Information
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Basic details about the patient
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+              {/* Name */}
+              <div>
+                <label className={labelClass}>
+                  Patient Name *
+                </label>
+
                 <input
                   required
-                  name="name"
                   type="text"
-                  value={doctorData.name}
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
-                  placeholder="Dr. John Smith"
-                  className={`${inputClass} pl-11`}
+                  placeholder="Enter full name"
+                  className={inputClass}
                 />
-              </Field>
+              </div>
 
-              <Field title="Specialization *" icon={Stethoscope}>
+              {/* Gender */}
+              <div>
+                <label className={labelClass}>
+                  Gender *
+                </label>
+
                 <select
                   required
-                  name="specialization"
-                  value={doctorData.specialization}
-                  onChange={handleChange}
-                  className={`${inputClass} pl-11`}
-                >
-                  <option value="" disabled>
-                    Select specialization
-                  </option>
-
-                  {specializations.map((item) => (
-                    <option key={item} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-
-              <Field title="Gender" icon={UserRound}>
-                <select
                   name="gender"
-                  value={doctorData.gender}
+                  value={formData.gender}
                   onChange={handleChange}
-                  className={`${inputClass} pl-11`}
+                  className={inputClass}
                 >
                   <option value="">Select gender</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                   <option value="Other">Other</option>
                 </select>
-              </Field>
+              </div>
 
-              <Field title="Doctor ID" icon={Hash}>
+              {/* Age */}
+              <div>
+                <label className={labelClass}>
+                  Age *
+                </label>
+
                 <input
-                  name="doctorId"
-                  type="text"
-                  value={doctorData.doctorId}
+                  required
+                  type="number"
+                  min="0"
+                  max="150"
+                  name="age"
+                  value={formData.age}
                   onChange={handleChange}
-                  placeholder="DOC-1001"
-                  className={`${inputClass} pl-11`}
+                  placeholder="Enter age"
+                  className={inputClass}
                 />
-              </Field>
+              </div>
+
+              {/* Blood Group */}
+              <div>
+                <label className={labelClass}>
+                  Blood Group
+                </label>
+
+                <select
+                  name="bloodGroup"
+                  value={formData.bloodGroup}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  <option value="">Select blood group</option>
+
+                  {[
+                    "A+",
+                    "A-",
+                    "B+",
+                    "B-",
+                    "AB+",
+                    "AB-",
+                    "O+",
+                    "O-",
+                  ].map((group) => (
+                    <option key={group} value={group}>
+                      {group}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
             </div>
-          </Section>
+          </section>
 
           {/* Contact Information */}
-          <Section
-            icon={Phone}
-            title="Contact Information"
-            subtitle="Hospital, phone and communication details"
-          >
-            <div className="grid gap-6 sm:grid-cols-2">
-              <Field title="Hospital Name *" icon={Building2}>
-                <input
-                  required
-                  name="hospital"
-                  value={doctorData.hospital}
-                  onChange={handleChange}
-                  placeholder="Enter hospital name"
-                  className={`${inputClass} pl-11`}
-                />
-              </Field>
+          <section className="border-b border-slate-100 p-4 sm:p-6">
 
-              <Field title="Phone Number *" icon={Phone}>
-                <input
-                  required
-                  name="phone"
-                  type="tel"
-                  value={doctorData.phone}
-                  onChange={handleChange}
-                  placeholder="+880 1XXXXXXXXX"
-                  className={`${inputClass} pl-11`}
-                />
-              </Field>
+            <div className="mb-5 flex items-center gap-3">
+              <div className="rounded-xl bg-green-50 p-2.5 text-green-600">
+                <Phone size={20} />
+              </div>
 
-              <Field title="Email Address *" icon={Mail}>
-                <input
-                  required
-                  name="email"
-                  type="email"
-                  value={doctorData.email}
-                  onChange={handleChange}
-                  placeholder="doctor@example.com"
-                  className={`${inputClass} pl-11`}
-                />
-              </Field>
-
-              <Field title="Chamber Address" icon={MapPin}>
-                <input
-                  name="chamberAddress"
-                  value={doctorData.chamberAddress}
-                  onChange={handleChange}
-                  placeholder="Dhanmondi, Dhaka"
-                  className={`${inputClass} pl-11`}
-                />
-              </Field>
+              <div>
+                <h2 className="font-bold text-slate-800">
+                  Contact Information
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Patient contact details and address
+                </p>
+              </div>
             </div>
-          </Section>
 
-          {/* Professional Information */}
-          <Section
-            icon={GraduationCap}
-            title="Professional Information"
-            subtitle="Qualifications, experience and consultation details"
-          >
-            <div className="grid gap-6 sm:grid-cols-2">
-              <Field title="Qualification" icon={GraduationCap}>
-                <input
-                  name="qualification"
-                  value={doctorData.qualification}
-                  onChange={handleChange}
-                  placeholder="MBBS, FCPS, MD"
-                  className={`${inputClass} pl-11`}
-                />
-              </Field>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
-              <Field title="Experience (Years)" icon={BriefcaseBusiness}>
-                <input
-                  name="experience"
-                  type="number"
-                  min="0"
-                  value={doctorData.experience}
-                  onChange={handleChange}
-                  placeholder="8"
-                  className={`${inputClass} pl-11`}
-                />
-              </Field>
-
-              <Field title="Consultation Fee (৳)" icon={Wallet}>
-                <input
-                  name="consultationFee"
-                  type="number"
-                  min="0"
-                  value={doctorData.consultationFee}
-                  onChange={handleChange}
-                  placeholder="800"
-                  className={`${inputClass} pl-11`}
-                />
-              </Field>
-
-              <Field title="Joining Date" icon={CalendarDays}>
-                <input
-                  name="joiningDate"
-                  type="date"
-                  value={doctorData.joiningDate}
-                  onChange={handleChange}
-                  className={`${inputClass} pl-11`}
-                />
-              </Field>
-            </div>
-          </Section>
-
-          {/* Availability */}
-          <Section
-            icon={Clock}
-            title="Availability & Status"
-            subtitle="Manage doctor's weekly schedule"
-          >
-            <label className={labelClass}>Available Days</label>
-
-            <div className="mb-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {days.map((day) => (
-                <label
-                  key={day}
-                  className="flex cursor-pointer items-center gap-2 rounded-xl border border-cyan-100 bg-cyan-50/60 p-3 text-sm font-medium text-slate-700 transition hover:border-cyan-500 hover:bg-cyan-100"
-                >
-                  <input
-                    type="checkbox"
-                    checked={doctorData.availableDays.includes(day)}
-                    onChange={() => handleDayChange(day)}
-                    className="h-4 w-4 accent-cyan-700"
-                  />
-                  {day}
+              {/* Phone */}
+              <div>
+                <label className={labelClass}>
+                  Phone Number *
                 </label>
-              ))}
+
+                <div className="relative">
+                  <Phone
+                    size={16}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  />
+
+                  <input
+                    required
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="017XXXXXXXX"
+                    className={`${inputClass} pl-9`}
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className={labelClass}>
+                  Email Address
+                </label>
+
+                <div className="relative">
+                  <Mail
+                    size={16}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  />
+
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="patient@example.com"
+                    className={`${inputClass} pl-9`}
+                  />
+                </div>
+              </div>
+
+              {/* Address */}
+              <div className="sm:col-span-2">
+                <label className={labelClass}>
+                  Full Address
+                </label>
+
+                <div className="relative">
+                  <MapPin
+                    size={16}
+                    className="absolute left-3 top-3 text-slate-400"
+                  />
+
+                  <textarea
+                    rows={2}
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    placeholder="Enter patient address..."
+                    className={`${inputClass} resize-none pl-9`}
+                  />
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          {/* Medical Information */}
+          <section className="border-b border-slate-100 p-4 sm:p-6">
+
+            <div className="mb-5 flex items-center gap-3">
+              <div className="rounded-xl bg-red-50 p-2.5 text-red-500">
+                <HeartPulse size={20} />
+              </div>
+
+              <div>
+                <h2 className="font-bold text-slate-800">
+                  Medical Information
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Medical condition and doctor assignment
+                </p>
+              </div>
             </div>
 
-            <label className={labelClass}>Doctor Status</label>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
-            <select
-              name="status"
-              value={doctorData.status}
-              onChange={handleChange}
-              className={inputClass}
-            >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </Section>
+              {/* Medical Condition */}
+              <div>
+                <label className={labelClass}>
+                  Medical Condition *
+                </label>
 
-          {/* Profile Image */}
-          <Section
-            icon={Camera}
-            title="Doctor Profile Image"
-            subtitle="Upload a professional profile photograph"
-          >
-            <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-cyan-300 bg-cyan-50/60 px-5 py-12 text-center transition hover:border-cyan-600 hover:bg-cyan-50">
-              {imagePreview ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={imagePreview}
-                  alt="Doctor preview"
-                  className="mb-4 h-28 w-28 rounded-2xl object-cover shadow-md"
-                />
-              ) : (
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-cyan-700 text-white shadow-md shadow-cyan-700/20">
-                  <Upload size={28} />
+                <select
+                  required
+                  name="medicalCondition"
+                  value={formData.medicalCondition}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  <option value="">Select condition</option>
+                  <option value="General">General</option>
+                  <option value="Diabetes">Diabetes</option>
+                  <option value="Heart Disease">Heart Disease</option>
+                  <option value="Fever">Fever</option>
+                  <option value="Hypertension">Hypertension</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              {/* Other Condition */}
+              {formData.medicalCondition === "Other" && (
+                <div>
+                  <label className={labelClass}>
+                    Specify Medical Condition *
+                  </label>
+
+                  <input
+                    required
+                    type="text"
+                    name="otherCondition"
+                    value={formData.otherCondition}
+                    onChange={handleChange}
+                    placeholder="Enter medical condition"
+                    className={inputClass}
+                  />
                 </div>
               )}
 
-              <h3 className="font-bold text-slate-800">
-                {imageFile ? imageFile.name : "Click to upload doctor's photo"}
-              </h3>
+              {/* Doctor Dropdown */}
+              <div>
+                <label className={labelClass}>
+                  <span className="inline-flex items-center gap-2">
+                    <Stethoscope size={15} className="text-blue-600" />
+                    Assign Doctor *
+                  </span>
+                </label>
 
-              <p className="mt-2 text-sm text-slate-500">
-                Image upload will be available after Cloudinary integration
-              </p>
+                <select
+                  required
+                  value={formData.doctorId}
+                  onChange={handleDoctorChange}
+                  disabled={loading}
+                  className={inputClass}
+                >
+                  <option value="">
+                    {loading ? "Loading doctors..." : "Select doctor"}
+                  </option>
 
-              <span className="mt-4 rounded-full bg-cyan-100 px-4 py-2 text-xs font-semibold text-cyan-800">
-                PNG, JPG or JPEG • Maximum 5MB
-              </span>
+                  {activeDoctors.map((doctor) => (
+                    <option key={doctor._id} value={doctor._id}>
+                      Dr. {doctor.name} - {doctor.specialization}
+                    </option>
+                  ))}
+                </select>
 
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/png,image/jpeg"
-                onChange={handleImageChange}
-                className="hidden"
-              />
-            </label>
-          </Section>
+                <p className="mt-1.5 text-xs text-slate-400">
+                  {loading
+                    ? "Loading doctor records..."
+                    : `${activeDoctors.length} active doctors available`}
+                </p>
+              </div>
 
-          {/* Success Message */}
-          {message && (
-            <div className="rounded-xl border border-green-200 bg-green-50 p-4 text-sm font-semibold text-green-700">
-              {message}
+              {/* Selected Doctor Details */}
+              {formData.doctorId && (
+                <div className="sm:col-span-2 overflow-hidden rounded-xl border border-blue-100 bg-blue-50/70">
+
+                  <div className="flex items-center gap-2 border-b border-blue-100 px-4 py-3">
+                    <div className="rounded-lg bg-blue-100 p-1.5 text-blue-700">
+                      <Stethoscope size={17} />
+                    </div>
+
+                    <h3 className="text-sm font-bold text-blue-800">
+                      Selected Doctor Information
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2">
+
+                    <div>
+                      <p className="mb-1 text-xs font-medium text-slate-500">
+                        Doctor Name
+                      </p>
+
+                      <p className="text-sm font-semibold text-slate-800">
+                        Dr. {formData.doctorName}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="mb-1 text-xs font-medium text-slate-500">
+                        Doctor Email
+                      </p>
+
+                      <p className="break-all text-sm font-semibold text-slate-800">
+                        {formData.doctorEmail || "No email available"}
+                      </p>
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <p className="mb-1 text-xs font-medium text-slate-500">
+                        Doctor MongoDB ID
+                      </p>
+
+                      <p className="break-all text-xs text-slate-600">
+                        {formData.doctorId}
+                      </p>
+                    </div>
+
+                  </div>
+                </div>
+              )}
+
+              {/* Appointment Date */}
+              <div>
+                <label className={labelClass}>
+                  <span className="inline-flex items-center gap-2">
+                    <CalendarDays size={15} className="text-blue-600" />
+                    Appointment Date
+                  </span>
+                </label>
+
+                <input
+                  type="date"
+                  name="appointmentDate"
+                  value={formData.appointmentDate}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className={labelClass}>
+                  Patient Status
+                </label>
+
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+
             </div>
-          )}
+          </section>
 
-          {/* Error Message */}
-          {error && (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
-              {error}
-            </div>
-          )}
+          {/* Form Footer */}
+          <div className="flex flex-col-reverse justify-end gap-3 bg-slate-50 px-4 py-4 sm:flex-row sm:px-6">
 
-          {/* Buttons */}
-          <div className="flex flex-col-reverse justify-end gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row">
-            <button
-              type="button"
-              onClick={handleReset}
-              disabled={loading}
-              className="rounded-xl border border-slate-200 px-7 py-3.5 text-sm font-bold text-slate-600 transition hover:bg-slate-100 disabled:opacity-50"
+            <Link
+              href="/dashboard/admin/patients"
+              className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
             >
-              Reset Form
-            </button>
+              Cancel
+            </Link>
 
             <button
               type="submit"
-              disabled={loading}
-              className="flex items-center justify-center gap-2 rounded-xl bg-cyan-800 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-cyan-800/20 transition hover:-translate-y-0.5 hover:bg-cyan-900 disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={submitting || loading}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Save size={18} />
-              {loading ? "Adding Doctor..." : "Add Doctor"}
+              {submitting ? (
+                <>
+                  <Loader2 size={17} className="animate-spin" />
+                  Saving Patient...
+                </>
+              ) : (
+                <>
+                  <Save size={17} />
+                  Add Patient
+                </>
+              )}
             </button>
+
           </div>
+
         </form>
 
-        <p className="py-6 text-center text-xs text-slate-400">
-          Doctor Tracker • Healthcare Management System
-        </p>
+        {/* Footer Note */}
+        <div className="flex items-center justify-center gap-2 pb-2 text-xs text-slate-400">
+          <ClipboardList size={14} />
+          Doctor Tracker · Secure Patient Management
+        </div>
+
       </div>
     </div>
   );
 };
 
-export default AddDoctor;
+export default AddPatient;
