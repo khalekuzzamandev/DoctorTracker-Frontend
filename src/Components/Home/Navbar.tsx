@@ -26,10 +26,10 @@ const navLinks: {
   icon: LucideIcon;
 }[] = [
     { name: "Home", href: "/", icon: House },
-    { name: "Doctors", href: "/doctors", icon: Stethoscope },
-    { name: "Patients", href: "/patients", icon: Users },
-    { name: "About", href: "/about", icon: Info },
-    { name: "Contact", href: "/contact", icon: Phone },
+    { name: "Doctors", href: "/home/doctors", icon: Stethoscope },
+    { name: "Patients", href: "/home/patients", icon: Users },
+    { name: "About", href: "/home/about", icon: Info },
+    { name: "Contact", href: "/home/contact", icon: Phone },
   ];
 
 const SearchBar = () => {
@@ -65,7 +65,6 @@ const Navbar = () => {
   // get user session
   const { data: userSession, isPending } = useSession();
   const user = userSession?.user || null
-  console.log(isPending, user, 'herre is user');
 
   const pathname = usePathname()
   if (pathname.includes('dashboard')) {

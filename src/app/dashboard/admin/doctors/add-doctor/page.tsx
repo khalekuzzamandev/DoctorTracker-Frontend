@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from "react";
@@ -23,22 +24,16 @@ import {
   Hash,
 } from "lucide-react";
 
-type DoctorFormData = {
-  name: string;
-  specialization: string;
-  gender: string;
-  doctorId: string;
-  hospital: string;
-  phone: string;
-  email: string;
-  chamberAddress: string;
-  qualification: string;
+import {
+  addDoctor,
+  type Doctor,
+  type DoctorStatus,
+  type DoctorGender,
+} from "@/Components/lib/actions/doctors";
+
+type DoctorFormData = Omit<Doctor, "experience" | "consultationFee"> & {
   experience: string;
   consultationFee: string;
-  joiningDate: string;
-  availableDays: string[];
-  status: string;
-  profileImage: File | null;
 };
 
 const initialFormData: DoctorFormData = {
@@ -114,6 +109,10 @@ const AddDoctor = () => {
   const [doctorData, setDoctorData] =
     useState<DoctorFormData>(initialFormData);
 
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
   const specializations = [
     "Cardiologist",
     "Neurologist",
@@ -144,7 +143,7 @@ const AddDoctor = () => {
 
   const label = "mb-2 block text-sm font-semibold text-slate-700";
 
-  // Handle all input and select fields
+  // Handle input and select fields
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -173,38 +172,64 @@ const AddDoctor = () => {
     const file = e.target.files?.[0] || null;
 
     if (file && file.size > 5 * 1024 * 1024) {
-      alert("Image size must be less than 5MB");
+      setError("Image size must be less than 5MB");
       e.target.value = "";
       return;
     }
 
+    setError("");
+
+    // Image upload will be implemented with Cloudinary later.
     setDoctorData((prev) => ({
       ...prev,
-      profileImage: file,
+      profileImage: null,
     }));
   };
 
-  // Submit form and show all data in console
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // Submit doctor data
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
 
-    const submittedData = {
-      ...doctorData,
-      experience: Number(doctorData.experience) || 0,
-      consultationFee: Number(doctorData.consultationFee) || 0,
-    };
+    setLoading(true);
+    setMessage("");
+    setError("");
 
-    console.log("Doctor Form Data:", submittedData);
+    try {
+      const submittedData: Doctor = {
+        ...doctorData,
+        gender: doctorData.gender as DoctorGender | "",
+        status: doctorData.status as DoctorStatus,
+        experience: Number(doctorData.experience) || 0,
+        consultationFee: Number(doctorData.consultationFee) || 0,
+        profileImage: null,
+      };
 
-    
-   
+      const result = await addDoctor(submittedData);
+
+      if (result.success) {
+        setMessage(result.message || "Doctor added successfully!");
+
+        setDoctorData({ ...initialFormData });
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong!"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Reset form
   const handleReset = () => {
-    setDoctorData(initialFormData);
+    setDoctorData({ ...initialFormData });
+    setMessage("");
+    setError("");
   };
-
   return (
     <div className="min-h-screen bg-[#f0fafa] px-4 py-8 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-5xl">
@@ -254,7 +279,11 @@ const AddDoctor = () => {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} onReset={handleReset} className="space-y-7">
+        <form
+          onSubmit={handleSubmit}
+          onReset={handleReset}
+          className="space-y-7"
+        >
 
           {/* Personal Information */}
           <Section
@@ -479,13 +508,11 @@ const AddDoctor = () => {
               </div>
 
               <h3 className="font-bold text-slate-800">
-                {doctorData.profileImage
-                  ? doctorData.profileImage.name
-                  : "Click to upload doctor's photo"}
+                Click to upload doctors photo
               </h3>
 
               <p className="mt-2 text-sm text-slate-500">
-                Drag and drop or browse your files
+                Image upload will be available after Cloudinary integration
               </p>
 
               <span className="mt-4 rounded-full bg-cyan-100 px-4 py-2 text-xs font-semibold text-cyan-800">
@@ -501,21 +528,37 @@ const AddDoctor = () => {
             </label>
           </Section>
 
+          {/* Success Message */}
+          {message && (
+            <div className="rounded-xl border border-green-200 bg-green-50 p-4 text-sm font-semibold text-green-700">
+              {message}
+            </div>
+          )}
+
+          {/* Error Message */}
+          {error && (
+            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
+              {error}
+            </div>
+          )}
+
           {/* Buttons */}
           <div className="flex flex-col-reverse justify-end gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row">
             <button
               type="reset"
-              className="rounded-xl border border-slate-200 px-7 py-3.5 text-sm font-bold text-slate-600 transition hover:bg-slate-100"
+              disabled={loading}
+              className="rounded-xl border border-slate-200 px-7 py-3.5 text-sm font-bold text-slate-600 transition hover:bg-slate-100 disabled:opacity-50"
             >
               Reset Form
             </button>
 
             <button
               type="submit"
-              className="flex items-center justify-center gap-2 rounded-xl bg-cyan-800 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-cyan-800/20 transition hover:-translate-y-0.5 hover:bg-cyan-900"
+              disabled={loading}
+              className="flex items-center justify-center gap-2 rounded-xl bg-cyan-800 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-cyan-800/20 transition hover:-translate-y-0.5 hover:bg-cyan-900 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Save size={18} />
-              Add Doctor
+              {loading ? "Adding Doctor..." : "Add Doctor"}
             </button>
           </div>
         </form>

@@ -1,0 +1,154 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+
+export type DoctorGender = "Male" | "Female" | "Other";
+export type DoctorStatus = "Active" | "Inactive";
+
+export type Doctor = {
+  name: string;
+  specialization: string;
+  gender: DoctorGender | "";
+  doctorId: string;
+  hospital: string;
+  phone: string;
+  email: string;
+  chamberAddress: string;
+  qualification: string;
+  experience: number;
+  consultationFee: number;
+  joiningDate: string;
+  availableDays: string[];
+  status: DoctorStatus;
+  profileImage: string | null;
+};
+
+export type ActionResult = {
+  success: boolean;
+  message?: string;
+};
+
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:5000"
+
+
+// add doctor
+export async function addDoctor(doctor: Doctor): Promise<ActionResult> {
+  try {
+    const res = await fetch(`${baseUrl}/api/adddoctor`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(doctor),
+      cache: "no-store",
+    });
+
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok || !data?.success) {
+      return {
+        success: false,
+        message: data?.message || "Failed to add doctor",
+      };
+    }
+
+    revalidatePath("/dashboard/doctors");
+
+    return {
+      success: true,
+      message: data.message || "Doctor added successfully!",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Cannot connect to the server. Please try again.",
+    };
+  }
+}
+
+
+
+export const getDoctor = async () => {
+  const res = await fetch(`${baseUrl}/api/get/doctor`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch doctors");
+
+  return res.json();
+};
+
+// Edit Doctor
+export async function updateDoctor(
+  id: string,
+  doctor: Doctor
+): Promise<ActionResult> {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/update/doctor/${encodeURIComponent(id)}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(doctor),
+        cache: "no-store",
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok || data.matchedCount === 0) {
+      return {
+        success: false,
+        message: "Failed to update doctor",
+      };
+    }
+
+    revalidatePath("/dashboard/doctors");
+
+    return {
+      success: true,
+      message: "Doctor updated successfully!",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Cannot connect to the server.",
+    };
+  }
+}
+
+
+// Delete Doctor
+export async function deleteDoctor(
+  id: string
+): Promise<ActionResult> {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/delete/doctor/${encodeURIComponent(id)}`,
+      {
+        method: "DELETE",
+        cache: "no-store",
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok || data.deletedCount === 0) {
+      return {
+        success: false,
+        message: "Failed to delete doctor",
+      };
+    }
+
+    revalidatePath("/dashboard/doctors");
+
+    return {
+      success: true,
+      message: "Doctor deleted successfully!",
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Cannot connect to the server.",
+    };
+  }
+}
