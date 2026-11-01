@@ -9,7 +9,7 @@
 </h3>
 
 <p align="center">
-  <a href="[https://gi-gnex.vercel.app/](https://doctor-tracker-frontend-51wb.vercel.app/)">
+  <a href="https://doctor-tracker-frontend-51wb.vercel.app">
     <img src="https://img.shields.io/badge/Live-Demo-success?style=for-the-badge" />
   </a>
   <a href="[https://github.com/muradvcv/GiGNEX](https://github.com/khalekuzzamandev/DoctorTracker-Frontend)">
