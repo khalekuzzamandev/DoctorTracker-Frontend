@@ -56,7 +56,7 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen space-y-8 bg-slate-50 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen space-y-8 bg-slate-50 mx-auto max-w-7xl">
       {/* Header */}
       <div>
         <p className="mb-2 text-sm font-semibold tracking-wider text-blue-600">

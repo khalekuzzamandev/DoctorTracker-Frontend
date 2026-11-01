@@ -58,16 +58,16 @@ const RecentPatients = () => {
 
         const sortedPatients: Patient[] = Array.isArray(data)
           ? [...data].sort((a, b) => {
-            const dateA = new Date(
-              a.createdAt || a.appointmentDate || 0
-            ).getTime();
+              const dateA = new Date(
+                a.createdAt || a.appointmentDate || 0
+              ).getTime();
 
-            const dateB = new Date(
-              b.createdAt || b.appointmentDate || 0
-            ).getTime();
+              const dateB = new Date(
+                b.createdAt || b.appointmentDate || 0
+              ).getTime();
 
-            return dateB - dateA;
-          })
+              return dateB - dateA;
+            })
           : [];
 
         setPatients(sortedPatients.slice(0, 4));
@@ -82,12 +82,12 @@ const RecentPatients = () => {
   }, []);
 
   return (
-    <section className="bg-white px-5 py-12 sm:px-8 lg:px-12">
+    <section className="bg-slate-50 px-5 py-12 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
 
         {/* Header */}
         <div className="mb-7 flex items-end justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1.5 text-xs font-semibold text-blue-700">
               <HeartPulse size={15} />
               Patient Overview
@@ -102,7 +102,6 @@ const RecentPatients = () => {
             </p>
           </div>
 
-          {/* All Patients */}
           <Link
             href="/patients"
             className="group flex shrink-0 items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-blue-700 sm:px-4 sm:py-2.5 sm:text-sm"
@@ -117,7 +116,7 @@ const RecentPatients = () => {
 
         {/* Loading Skeleton */}
         {loading && (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid w-full gap-4 md:grid-cols-2">
             {Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={index}
@@ -137,11 +136,11 @@ const RecentPatients = () => {
 
         {/* Patients Grid */}
         {!loading && patients.length > 0 && (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid w-full gap-4 md:grid-cols-2">
             {patients.map((patient) => (
               <div
                 key={patient._id}
-                className="group flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md sm:gap-4"
+                className="group flex min-w-0 items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md sm:gap-4"
               >
                 {/* User Icon */}
                 <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-blue-50 transition group-hover:bg-blue-100 sm:h-[72px] sm:w-[72px]">
@@ -163,9 +162,7 @@ const RecentPatients = () => {
                       <span>{patient.age} Years</span>
                     )}
 
-                    {patient.gender && (
-                      <span>{patient.gender}</span>
-                    )}
+                    {patient.gender && <span>{patient.gender}</span>}
                   </div>
 
                   <div className="mt-2 flex items-center gap-1.5 text-xs font-medium text-blue-600">
@@ -187,7 +184,7 @@ const RecentPatients = () => {
 
                 {/* Details */}
                 <Link
-                  href={`/patients/${patient._id}`}
+                  href={`/ patients / ${ patient._id } `}
                   className="flex shrink-0 items-center gap-1 rounded-lg bg-blue-50 px-2.5 py-2 text-xs font-semibold text-blue-700 transition hover:bg-blue-600 hover:text-white"
                 >
                   Details
@@ -200,11 +197,8 @@ const RecentPatients = () => {
 
         {/* Empty State */}
         {!loading && patients.length === 0 && (
-          <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 py-10 text-center">
-            <UserRound
-              size={36}
-              className="mx-auto text-slate-400"
-            />
+          <div className="w-full rounded-xl border border-dashed border-slate-300 bg-slate-50 py-10 text-center">
+            <UserRound size={36} className="mx-auto text-slate-400" />
 
             <h3 className="mt-3 text-base font-bold text-slate-800">
               No Patients Available
@@ -215,7 +209,6 @@ const RecentPatients = () => {
             </p>
           </div>
         )}
-
       </div>
     </section>
   );
