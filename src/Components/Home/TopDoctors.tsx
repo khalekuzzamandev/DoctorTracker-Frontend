@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -6,7 +7,7 @@ import {
   ArrowRight,
   BadgeCheck,
   Stethoscope,
-  Loader2,
+  UserRound,
 } from "lucide-react";
 
 interface Doctor {
@@ -16,7 +17,6 @@ interface Doctor {
   qualification?: string;
   hospital?: string;
   experience?: number;
-  consultationFee?: number;
 }
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -37,7 +37,6 @@ const TopDoctors = () => {
         }
 
         const data = await res.json();
-
         setDoctors(Array.isArray(data) ? data.slice(0, 4) : []);
       } catch (error) {
         console.error("Doctor fetch error:", error);
@@ -50,40 +49,53 @@ const TopDoctors = () => {
   }, []);
 
   return (
-    <section className="bg-slate-50 px-5 py-16 sm:px-8 lg:px-12">
+    <section className="bg-slate-50 px-5 py-12 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
 
-        {/* Heading */}
-        <div className="mb-10 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700">
-            <Stethoscope size={17} />
-            Our Medical Experts
-          </span>
+        {/* Header */}
+        <div className="mb-7 flex items-end justify-between gap-4">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1.5 text-xs font-semibold text-blue-700">
+              <Stethoscope size={15} />
+              Our Medical Experts
+            </span>
 
-          <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl">
-            Meet Our <span className="text-blue-600">Top Doctors</span>
-          </h2>
+            <h2 className="mt-3 text-2xl font-extrabold text-slate-900 sm:text-3xl">
+              Meet Our{" "}
+              <span className="text-blue-600">Top Doctors</span>
+            </h2>
 
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-500">
-            Meet our experienced healthcare professionals dedicated
-            to providing the best medical care.
-          </p>
+            <p className="mt-2 max-w-xl text-sm text-slate-500">
+              Meet our experienced healthcare professionals dedicated
+              to providing the best medical care.
+            </p>
+          </div>
+
+          {/* All Doctors */}
+          <Link
+            href="home/doctors"
+            className="group flex shrink-0 items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-blue-700 sm:px-4 sm:py-2.5 sm:text-sm"
+          >
+            All Doctors
+            <ArrowRight
+              size={15}
+              className="transition-transform group-hover:translate-x-1"
+            />
+          </Link>
         </div>
 
-        {/* Loading */}
+        {/* Loading Skeleton */}
         {loading && (
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2">
             {Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={index}
-                className="flex animate-pulse items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4"
+                className="flex animate-pulse items-center gap-4 rounded-xl border border-slate-200 bg-white p-3"
               >
-                <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-slate-200">
-                  <Stethoscope className="text-slate-400" size={35} />
-                </div>
+                <div className="h-16 w-16 shrink-0 rounded-lg bg-slate-200" />
 
-                <div className="flex-1 space-y-3">
-                  <div className="h-4 w-32 rounded bg-slate-200" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-36 rounded bg-slate-200" />
                   <div className="h-3 w-24 rounded bg-slate-200" />
                   <div className="h-3 w-full rounded bg-slate-200" />
                 </div>
@@ -94,39 +106,39 @@ const TopDoctors = () => {
 
         {/* Doctors Grid */}
         {!loading && doctors.length > 0 && (
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2">
             {doctors.map((doctor) => (
               <div
                 key={doctor._id}
-                className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg sm:gap-5"
+                className="group flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md sm:gap-4"
               >
-                {/* Doctor Icon */}
-                <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-blue-50 transition duration-300 group-hover:bg-blue-100 sm:h-28 sm:w-28">
-                  <Stethoscope
-                    size={42}
-                    strokeWidth={1.5}
-                    className="text-blue-600 transition duration-300 group-hover:scale-110"
+                {/* User Icon */}
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-blue-50 transition group-hover:bg-blue-100 sm:h-[72px] sm:w-[72px]">
+                  <UserRound
+                    size={32}
+                    strokeWidth={1.7}
+                    className="text-blue-600"
                   />
                 </div>
 
                 {/* Doctor Information */}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
-                    <h3 className="truncate text-base font-bold text-slate-900 sm:text-lg">
+                    <h3 className="truncate text-sm font-bold text-slate-900 sm:text-base">
                       {doctor.name}
                     </h3>
 
                     <BadgeCheck
-                      size={17}
+                      size={16}
                       className="shrink-0 text-blue-500"
                     />
                   </div>
 
-                  <p className="mt-1 text-sm font-semibold text-blue-600">
+                  <p className="mt-1 text-xs font-semibold text-blue-600 sm:text-sm">
                     {doctor.specialization || "General Physician"}
                   </p>
 
-                  <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500 sm:text-sm">
+                  <p className="mt-1 truncate text-xs text-slate-500">
                     {doctor.qualification || "Medical Professional"}
                   </p>
 
@@ -145,12 +157,11 @@ const TopDoctors = () => {
 
                 {/* View Profile */}
                 <Link
-                  href={`/doctors/${doctor._id}`}
-                  className="flex shrink-0 items-center gap-1 rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition hover:bg-blue-600 hover:text-white sm:px-4 sm:py-2.5 sm:text-sm"
+                  href={`home/doctors/${doctor._id}`}
+                  className="flex shrink-0 items-center gap-1 rounded-lg bg-blue-50 px-2.5 py-2 text-xs font-semibold text-blue-700 transition hover:bg-blue-600 hover:text-white"
                 >
-                  <span className="hidden sm:inline">View Profile</span>
-                  <span className="sm:hidden">View</span>
-                  <ArrowRight size={15} />
+                  View
+                  <ArrowRight size={13} />
                 </Link>
               </div>
             ))}
@@ -159,32 +170,21 @@ const TopDoctors = () => {
 
         {/* Empty State */}
         {!loading && doctors.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-12 text-center">
-            <Stethoscope
+          <div className="rounded-xl border border-dashed border-slate-300 bg-white py-10 text-center">
+            <UserRound
+              size={36}
               className="mx-auto text-slate-400"
-              size={40}
             />
 
-            <h3 className="mt-4 text-lg font-bold text-slate-800">
+            <h3 className="mt-3 text-base font-bold text-slate-800">
               No Doctors Available
             </h3>
 
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-slate-500">
               Doctors will appear here once they are added.
             </p>
           </div>
         )}
-
-        {/* View All */}
-        <div className="mt-9 text-center">
-          <Link
-            href="/doctors"
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-7 py-3 font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
-          >
-            View All Doctors
-            <ArrowRight size={18} />
-          </Link>
-        </div>
 
       </div>
     </section>
