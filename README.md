@@ -12,10 +12,10 @@
   <a href="https://doctor-tracker-frontend-51wb.vercel.app">
     <img src="https://img.shields.io/badge/Live-Demo-success?style=for-the-badge" />
   </a>
-  <a href="[https://github.com/muradvcv/GiGNEX](https://github.com/khalekuzzamandev/DoctorTracker-Frontend)">
+  <a href="https://github.com/khalekuzzamandev/DoctorTracker-Frontend">
     <img src="https://img.shields.io/badge/Client-Repository-blue?style=for-the-badge" />
   </a>
-  <a href="[https://github.com/muradvcv/GiGNEX-BACKEND](https://github.com/khalekuzzamandev/DoctorTracker-Backend)">
+  <a href="https://github.com/khalekuzzamandev/DoctorTracker-Backend">
     <img src="https://img.shields.io/badge/Server-Repository-orange?style=for-the-badge" />
   </a>
 </p>
