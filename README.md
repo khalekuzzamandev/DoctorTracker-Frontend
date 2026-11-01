@@ -1,7 +1,7 @@
 # GiGNEX - Freelance Micro-Task Platform
 
 <p align="center">
-  <img src="./src/adminoverview.png" alt="SkillSwap Dashboard Overview" width="100%" />
+  <img src="[./src/adminoverview.png](https://i.ibb.co.com/4wHMZpNK/image.png)" alt="SkillSwap Dashboard Overview" width="100%" />
 </p>
 
 <h3 align="center">
