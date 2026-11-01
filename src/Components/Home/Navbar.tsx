@@ -28,8 +28,8 @@ const navLinks: {
     { name: "Home", href: "/", icon: House },
     { name: "Doctors", href: "/home/doctors", icon: Stethoscope },
     { name: "Patients", href: "/home/patients", icon: Users },
-    { name: "About", href: "/home/about", icon: Info },
-    { name: "Contact", href: "/home/contact", icon: Phone },
+    { name: "About", href: "#about", icon: Info },
+    { name: "Contact", href: "#contact", icon: Phone },
   ];
 
 const SearchBar = () => {

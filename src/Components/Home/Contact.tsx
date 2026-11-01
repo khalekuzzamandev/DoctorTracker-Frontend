@@ -1,7 +1,5 @@
 
 "use client";
-
-import React from "react";
 import {
   Mail,
   Phone,
@@ -23,56 +21,59 @@ const contactInfo = [
     title: "Phone Number",
     value: "+880 1XXXXXXXXX",
     description: "Call us for immediate assistance",
-    color: "bg-blue-50 text-blue-600",
-    iconBg: "bg-blue-100",
+    iconBg: "bg-blue-50",
+    iconColor: "text-blue-600",
   },
   {
     icon: Mail,
     title: "Email Address",
     value: "support@doctortracker.com",
     description: "Send us your questions anytime",
-    color: "bg-violet-50 text-violet-600",
-    iconBg: "bg-violet-100",
+    iconBg: "bg-violet-50",
+    iconColor: "text-violet-600",
   },
   {
     icon: MapPin,
     title: "Office Address",
     value: "Dhaka, Bangladesh",
     description: "Visit our office for support",
-    color: "bg-emerald-50 text-emerald-600",
-    iconBg: "bg-emerald-100",
+    iconBg: "bg-emerald-50",
+    iconColor: "text-emerald-600",
   },
   {
     icon: Clock,
     title: "Working Hours",
     value: "Sat - Thu: 9 AM - 6 PM",
     description: "Friday: Closed",
-    color: "bg-amber-50 text-amber-600",
-    iconBg: "bg-amber-100",
+    iconBg: "bg-amber-50",
+    iconColor: "text-amber-600",
   },
 ];
 
 const inputClass =
-  "w-full rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-50";
+  "w-full min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-50";
 
 const Contact = () => {
   return (
-    <main className="min-h-screen  min-w-0 overflow-x-hidden bg-slate-50 py-8">
-      <div className="mx-auto max-w-7xl space-y-8">
+    <main
+      id="contact"
+      className="w-full min-w-0 scroll-mt-24 overflow-hidden bg-slate-50 py-10 sm:py-12"
+    >
+      <div className="mx-auto w-full max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
 
         {/* Page Header */}
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
-            <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-600">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-blue-700">
               <span className="h-2 w-2 rounded-full bg-blue-600" />
               Support Center
             </div>
 
-            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
-              Contact Us
-            </h1>
+            <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
+              Contact <span className="text-blue-600">Us</span>
+            </h2>
 
-            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">
+            <p className="mt-2 max-w-xl text-sm leading-7 text-slate-500 sm:text-base">
               Have questions or need assistance? Connect with our support
               team. We&apos;re always happy to help.
             </p>
@@ -83,21 +84,21 @@ const Contact = () => {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-50" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
             </span>
+
             <span className="text-xs font-semibold text-emerald-700">
               Support Available
             </span>
           </div>
-        </div>
+        </section>
 
         {/* Hero Banner */}
-        <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-800 via-blue-700 to-cyan-600 p-6 text-white shadow-xl shadow-blue-900/10 sm:p-8 lg:p-10">
-          {/* Decorative Shapes */}
+        <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-800 via-blue-700 to-cyan-600 px-5 py-8 text-white shadow-xl shadow-blue-900/10 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
           <div className="absolute -right-16 -top-20 h-72 w-72 rounded-full border-[40px] border-white/5" />
-          <div className="absolute -bottom-32 right-28 h-80 w-80 rounded-full border-[45px] border-white/5" />
+          <div className="absolute -bottom-32 right-20 h-80 w-80 rounded-full border-[45px] border-white/5" />
 
           <div className="relative z-10 grid items-center gap-8 lg:grid-cols-[1fr_auto]">
             <div className="max-w-2xl">
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-white/20 bg-white/15 shadow-inner">
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-white/20 bg-white/15">
                 <Headset size={26} />
               </div>
 
@@ -105,20 +106,20 @@ const Contact = () => {
                 We&apos;re Here For You
               </span>
 
-              <h2 className="mt-3 text-2xl font-extrabold leading-tight sm:text-3xl lg:text-4xl">
+              <h3 className="mt-3 text-2xl font-extrabold leading-tight sm:text-3xl lg:text-4xl">
                 We&apos;re Always Here
                 <br className="hidden sm:block" /> to Help You!
-              </h2>
+              </h3>
 
-              <p className="mt-4 max-w-xl text-sm leading-7 text-blue-100">
+              <p className="mt-4 max-w-xl text-sm leading-7 text-blue-100 sm:text-base">
                 Contact our support team for questions, technical issues,
                 feedback, or assistance with your Doctor Tracker platform.
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-6 flex flex-col gap-3 xs:flex-row sm:flex-row">
                 <a
                   href="mailto:support@doctortracker.com"
-                  className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-blue-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-blue-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-blue-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-blue-50"
                 >
                   <Mail size={17} />
                   Email Support
@@ -127,7 +128,7 @@ const Contact = () => {
 
                 <a
                   href="tel:+8801XXXXXXXXX"
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
                 >
                   <Phone size={17} />
                   Call Us
@@ -136,10 +137,14 @@ const Contact = () => {
             </div>
 
             {/* Hero Illustration */}
-            <div className="hidden lg:flex lg:items-center lg:justify-center">
+            <div className="hidden items-center justify-center lg:flex">
               <div className="relative flex h-48 w-48 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-sm">
                 <div className="flex h-36 w-36 items-center justify-center rounded-full bg-white/15">
-                  <Headset size={76} strokeWidth={1.2} className="text-white" />
+                  <Headset
+                    size={76}
+                    strokeWidth={1.2}
+                    className="text-white"
+                  />
                 </div>
 
                 <div className="absolute -right-2 top-7 flex h-12 w-12 items-center justify-center rounded-xl bg-white text-blue-600 shadow-lg">
@@ -158,9 +163,14 @@ const Contact = () => {
         <section>
           <div className="mb-5 flex items-end justify-between gap-3">
             <div>
-              <h2 className="text-xl font-bold text-slate-900">
+              <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
+                Get In Touch
+              </p>
+
+              <h3 className="mt-2 text-xl font-extrabold text-slate-900 sm:text-2xl">
                 Contact Information
-              </h2>
+              </h3>
+
               <p className="mt-1 text-sm text-slate-500">
                 Choose your preferred way to reach us.
               </p>
@@ -180,13 +190,15 @@ const Contact = () => {
                   key={item.title}
                   className="group min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg"
                 >
-                  <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${item.iconBg} ${item.color.split(" ")[1]} transition duration-300 group-hover:scale-105`}>
+                  <div
+                    className={`mb - 4 flex h - 12 w - 12 items - center justify - center rounded - xl ${ item.iconBg } ${ item.iconColor } transition duration - 300 group - hover: scale - 105`}
+                  >
                     <Icon size={23} />
                   </div>
 
-                  <h3 className="text-sm font-semibold text-slate-700">
+                  <h4 className="text-sm font-semibold text-slate-700">
                     {item.title}
-                  </h3>
+                  </h4>
 
                   <p className="mt-2 break-words text-sm font-bold text-slate-900">
                     {item.value}
@@ -212,9 +224,10 @@ const Contact = () => {
               </div>
 
               <div>
-                <h2 className="text-xl font-bold text-slate-900">
+                <h3 className="text-xl font-bold text-slate-900">
                   Send Us a Message
-                </h2>
+                </h3>
+
                 <p className="mt-1 text-sm text-slate-500">
                   Fill out the form and we&apos;ll get back to you.
                 </p>
@@ -222,35 +235,55 @@ const Contact = () => {
             </div>
 
             <form className="space-y-5">
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+              <div className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
+                <div className="min-w-0">
+                  <label
+                    htmlFor="contact-name"
+                    className="mb-2 block text-sm font-semibold text-slate-700"
+                  >
                     Full Name
                   </label>
+
                   <input
+                    id="contact-name"
+                    name="name"
                     type="text"
                     placeholder="Enter your full name"
+                    autoComplete="name"
                     className={inputClass}
                   />
                 </div>
 
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                <div className="min-w-0">
+                  <label
+                    htmlFor="contact-email"
+                    className="mb-2 block text-sm font-semibold text-slate-700"
+                  >
                     Email Address
                   </label>
+
                   <input
+                    id="contact-email"
+                    name="email"
                     type="email"
                     placeholder="Enter your email"
+                    autoComplete="email"
                     className={inputClass}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                <label
+                  htmlFor="contact-subject"
+                  className="mb-2 block text-sm font-semibold text-slate-700"
+                >
                   Subject
                 </label>
+
                 <input
+                  id="contact-subject"
+                  name="subject"
                   type="text"
                   placeholder="What is this about?"
                   className={inputClass}
@@ -258,13 +291,19 @@ const Contact = () => {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                <label
+                  htmlFor="contact-message"
+                  className="mb-2 block text-sm font-semibold text-slate-700"
+                >
                   Message
                 </label>
+
                 <textarea
+                  id="contact-message"
+                  name="message"
                   rows={5}
                   placeholder="Write your message here..."
-                  className={`${inputClass} resize-none`}
+                  className={`${ inputClass } resize - none`}
                 />
               </div>
 
@@ -293,7 +332,11 @@ const Contact = () => {
                 <Globe size={23} />
               </div>
 
-              <h3 className="text-lg font-bold text-slate-900">
+              <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
+                Customer Care
+              </p>
+
+              <h3 className="mt-2 text-lg font-bold text-slate-900">
                 Doctor Tracker Support
               </h3>
 
@@ -304,27 +347,30 @@ const Contact = () => {
 
               <div className="mt-6 space-y-4 border-t border-slate-100 pt-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
                     <MessageCircle size={17} />
                   </div>
+
                   <span className="text-sm font-medium text-slate-700">
                     Technical Support
                   </span>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
                     <Headset size={17} />
                   </div>
+
                   <span className="text-sm font-medium text-slate-700">
                     Account Assistance
                   </span>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
                     <Mail size={17} />
                   </div>
+
                   <span className="text-sm font-medium text-slate-700">
                     General Enquiries
                   </span>
@@ -369,7 +415,6 @@ const Contact = () => {
             Healthcare Management Made Simple
           </p>
         </footer>
-
       </div>
     </main>
   );
