@@ -199,9 +199,13 @@ const Setting = () => {
 
   // Load sessions only when Login Settings opens
   useEffect(() => {
-    if (showLoginSettings) {
+    if (!showLoginSettings) return;
+
+    const timeoutId = window.setTimeout(() => {
       void loadSessions();
-    }
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, [showLoginSettings, loadSessions]);
 
   // Logout One Device
@@ -704,7 +708,7 @@ const Setting = () => {
               <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                 <div>
                   <h3 className="font-bold text-slate-800">
-                    Where You're Logged In
+                    Where You&apos;re Logged In
                   </h3>
 
                   <p className="mt-1 text-xs text-slate-500">
