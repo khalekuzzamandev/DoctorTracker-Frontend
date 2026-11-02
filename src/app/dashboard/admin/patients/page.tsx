@@ -389,7 +389,6 @@ const Patient = () => {
                     <th className="px-5 py-4">#</th>
                     <th className="px-5 py-4">Patient Name</th>
                     <th className="px-5 py-4">Age</th>
-                    <th className="px-5 py-4">Gender</th>
                     <th className="px-5 py-4">Condition</th>
                     <th className="px-5 py-4">Doctor</th>
                     <th className="px-5 py-4">Phone</th>
@@ -433,10 +432,6 @@ const Patient = () => {
                         {patient.age ?? "N/A"}
                       </td>
 
-                      {/* Gender */}
-                      <td className="px-5 py-4 text-sm text-slate-600">
-                        {patient.gender || "N/A"}
-                      </td>
 
                       {/* Condition */}
                       <td className="whitespace-nowrap px-5 py-4">

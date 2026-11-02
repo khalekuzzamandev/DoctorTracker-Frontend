@@ -232,7 +232,7 @@ const DoctorData = async () => {
                 <th className="px-5 py-4">Specialization</th>
                 <th className="px-5 py-4">Hospital</th>
                 <th className="px-5 py-4">Phone</th>
-                <th className="px-5 py-4">Email Address</th>
+               
                 <th className="px-5 py-4 text-center">Actions</th>
               </tr>
             </thead>
@@ -284,9 +284,7 @@ const DoctorData = async () => {
                       {doctor.phone}
                     </td>
 
-                    <td className="whitespace-nowrap px-5 py-4 text-sm text-slate-600">
-                      {doctor.email}
-                    </td>
+                  
 
                     <td className="px-5 py-4">
                       <div className="flex items-center justify-center gap-2">

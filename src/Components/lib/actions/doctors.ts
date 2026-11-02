@@ -77,78 +77,14 @@ export const getDoctor = async () => {
   return res.json();
 };
 
-// Edit Doctor
-export async function updateDoctor(
-  id: string,
-  doctor: Doctor
-): Promise<ActionResult> {
-  try {
-    const res = await fetch(
-      `${baseUrl}/api/update/doctor/${encodeURIComponent(id)}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(doctor),
-        cache: "no-store",
-      }
-    );
+// get dynamic doctor
+export const getDoctorDetails=async (id)=>{
+  const res = await fetch(`${baseUrl}/api/get/doctor/${id}`,{
 
-    const data = await res.json();
+    cache: "no-store",
+  });
 
-    if (!res.ok || data.matchedCount === 0) {
-      return {
-        success: false,
-        message: "Failed to update doctor",
-      };
-    }
+  if (!res.ok) throw new Error("Failed to fetch doctors");
 
-    revalidatePath("/dashboard/doctors");
-
-    return {
-      success: true,
-      message: "Doctor updated successfully!",
-    };
-  } catch {
-    return {
-      success: false,
-      message: "Cannot connect to the server.",
-    };
-  }
-}
-
-
-// Delete Doctor
-export async function deleteDoctor(
-  id: string
-): Promise<ActionResult> {
-  try {
-    const res = await fetch(
-      `${baseUrl}/api/delete/doctor/${encodeURIComponent(id)}`,
-      {
-        method: "DELETE",
-        cache: "no-store",
-      }
-    );
-
-    const data = await res.json();
-
-    if (!res.ok || data.deletedCount === 0) {
-      return {
-        success: false,
-        message: "Failed to delete doctor",
-      };
-    }
-
-    revalidatePath("/dashboard/doctors");
-
-    return {
-      success: true,
-      message: "Doctor deleted successfully!",
-    };
-  } catch {
-    return {
-      success: false,
-      message: "Cannot connect to the server.",
-    };
-  }
+  return res.json();
 }
