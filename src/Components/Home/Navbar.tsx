@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 
 import {
@@ -17,6 +17,7 @@ import {
   Search,
   LayoutDashboard,
 } from "lucide-react";
+
 import { useSession } from "../lib/auth-client";
 import { usePathname } from "next/navigation";
 
@@ -58,19 +59,111 @@ const SearchBar = () => {
   );
 };
 
-const Navbar = () => {
+// Dashboard Button
+const DashboardButton = () => {
+  return (
+    <Link
+      href="/dashboard"
+      className="group relative inline-flex h-10 w-[110px] items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-600 text-sm font-bold text-white shadow-md shadow-blue-500/20 transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/30 active:scale-95"
+    >
+      <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
 
-  
+      <LayoutDashboard
+        size={18}
+        strokeWidth={2.3}
+        className="relative z-10 transition-all duration-500 group-hover:rotate-12 group-hover:scale-110"
+      />
 
-  // get user session
+      <span className="relative z-10">Dashboard</span>
+
+      <span className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/20 transition-all duration-300 group-hover:ring-white/40" />
+    </Link>
+  );
+};
+
+// Login Button
+const LoginButton = () => {
+  return (
+    <Link
+      href="/login"
+      className="inline-flex h-10 w-[110px] items-center justify-center rounded-xl bg-blue-600 text-sm font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-blue-700 hover:shadow-lg active:scale-95"
+    >
+      Login
+    </Link>
+  );
+};
+
+// Mobile Menu
+const MobileMenu = ({ isAdmin }: { isAdmin: boolean }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle navigation menu"
+        aria-expanded={isOpen}
+        className="rounded-xl bg-blue-50 p-3 text-blue-700 transition hover:bg-blue-100"
+      >
+        {isOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 top-14 z-50 w-[min(340px,calc(100vw-32px))] rounded-2xl border border-slate-100 bg-white p-4 shadow-2xl">
+          <div className="flex flex-col gap-2">
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+                >
+                  <Icon size={18} />
+                  {link.name}
+                </Link>
+              );
+            })}
+          </div>
+
+          <div className="mt-3 flex flex-col gap-3 border-t border-slate-100 pt-4">
+            <SearchBar />
+
+            {isAdmin && (
+              <div onClick={() => setIsOpen(false)}>
+                <DashboardButton />
+              </div>
+            )}
+
+            {!isAdmin && (
+              <div onClick={() => setIsOpen(false)}>
+                <LoginButton />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Main Navbar Content
+const NavbarContent = () => {
   const { data: userSession, isPending } = useSession();
-  const user = userSession?.user || null
 
-  const pathname = usePathname()
-  if (pathname.includes('dashboard')) {
-    return null
+  const user = userSession?.user || null;
+
+  const pathname = usePathname();
+
+  const isAdmin = user?.role === "admin";
+
+  if (pathname?.includes("dashboard")) {
+    return null;
   }
-  
+
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 shadow-sm backdrop-blur-xl">
       <nav className="mx-auto flex h-20 max-w-[1500px] items-center justify-between px-5 sm:px-8 lg:px-12">
@@ -118,43 +211,19 @@ const Navbar = () => {
         {/* Desktop Actions */}
         <div className="hidden items-center gap-3 md:flex">
           <SearchBar />
-          {
-            isPending ? (
-              <div className="h-10 w-[110px] animate-pulse rounded-xl bg-gray-200" />
-            ) : user ? (
-              <Link
-                href="/dashboard"
-                className="group relative inline-flex h-10 w-[110px] items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-600 text-sm font-bold text-white shadow-md shadow-blue-500/20 transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/30 active:scale-95"
-              >
-                {/* Shine Animation */}
-                <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
 
-                {/* Icon */}
-                <LayoutDashboard
-                  size={18}
-                  strokeWidth={2.3}
-                  className="relative z-10 transition-all duration-500 group-hover:rotate-12 group-hover:scale-110"
-                />
-
-                <span className="relative z-10">Dashboard</span>
-
-                {/* Glow */}
-                <span className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/20 transition-all duration-300 group-hover:ring-white/40" />
-              </Link>
-            ) : (
-              <Link
-                href="/login"
-                className="inline-flex h-10 w-[110px] items-center justify-center rounded-xl bg-blue-600 text-sm font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-blue-700 hover:shadow-lg active:scale-95"
-              >
-                Login
-              </Link>
-            )
-          }
+          {isPending ? (
+            <div className="h-10 w-[110px] animate-pulse rounded-xl bg-gray-200" />
+          ) : isAdmin ? (
+            <DashboardButton />
+          ) : !user ? (
+            <LoginButton />
+          ) : null}
         </div>
 
         {/* Mobile Menu */}
         <div className="md:hidden">
-          <MobileMenu />
+          <MobileMenu isAdmin={isAdmin} />
         </div>
 
       </nav>
@@ -162,62 +231,16 @@ const Navbar = () => {
   );
 };
 
-const MobileMenu = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-
+// Navbar with Suspense
+const Navbar = () => {
   return (
-    <div className="relative">
-
-      {/* Menu Toggle Button */}
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Toggle navigation menu"
-        aria-expanded={isOpen}
-        className="rounded-xl bg-blue-50 p-3 text-blue-700 transition hover:bg-blue-100"
-      >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
-
-      {/* Dropdown Menu */}
-      {isOpen && (
-        <div className="absolute right-0 top-14 z-50 w-[min(340px,calc(100vw-32px))] rounded-2xl border border-slate-100 bg-white p-4 shadow-2xl">
-
-          {/* Navigation Links */}
-          <div className="flex flex-col gap-2">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-
-              return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
-                >
-                  <Icon size={18} />
-                  {link.name}
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Search & Login */}
-          <div className="mt-3 flex flex-col gap-3 border-t border-slate-100 pt-4">
-            <SearchBar />
-
-            <Link
-              href="/login"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center justify-center rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-blue-700"
-            >
-              Login
-            </Link>
-          </div>
-
-        </div>
-      )}
-    </div>
+    <Suspense
+      fallback={
+        <div className="h-20 border-b border-slate-200/70 bg-white" />
+      }
+    >
+      <NavbarContent />
+    </Suspense>
   );
 };
 

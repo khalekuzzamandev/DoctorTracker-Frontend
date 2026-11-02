@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Activity,
 } from "lucide-react";
+import { connection } from "next/server";
 
 interface DoctorType {
   _id: string;
@@ -53,6 +54,8 @@ const DoctorSkeleton = () => (
 
 // Doctor List
 const DoctorList = async () => {
+  await connection();
+
   const doctors: DoctorType[] = await getDoctor();
 
   return (

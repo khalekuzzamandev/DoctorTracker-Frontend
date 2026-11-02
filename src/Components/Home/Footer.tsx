@@ -1,22 +1,29 @@
-"use client"
-import Image from 'next/image';
-import Link from 'next/link';
+
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import React, { Suspense } from "react";
+
 import {
   Mail,
   MapPin,
   Phone,
   Heart,
   ArrowRight,
-} from 'lucide-react';
-import { FaFacebook, FaGithub } from 'react-icons/fa';
-import { LiaLinkedin } from 'react-icons/lia';
-import { usePathname } from 'next/navigation';
+} from "lucide-react";
 
-const Footer = () => {
-   const pathname = usePathname()
-    if (pathname.includes('dashboard')) {
-      return null
-    }
+import { FaFacebook, FaGithub } from "react-icons/fa";
+import { LiaLinkedin } from "react-icons/lia";
+import { usePathname } from "next/navigation";
+
+const FooterContent = () => {
+  const pathname = usePathname();
+
+  if (pathname?.includes("dashboard")) {
+    return null;
+  }
+
   return (
     <footer className="bg-slate-950 text-slate-300">
 
@@ -38,6 +45,7 @@ const Footer = () => {
               <h2 className="text-2xl font-extrabold text-white">
                 Doctor<span className="text-blue-500">Traker</span>
               </h2>
+
               <p className="text-[10px] font-semibold uppercase tracking-[2px] text-slate-400">
                 Healthcare Management
               </p>
@@ -53,15 +61,24 @@ const Footer = () => {
           {/* Social Links */}
           <div className="flex gap-3">
             {[
-              { icon: FaFacebook, href: 'https://facebook.com' },
-              { icon: FaGithub, href: 'https://github.com' },
-              { icon: LiaLinkedin, href: 'https://linkedin.com' },
+              {
+                icon: FaFacebook,
+                href: "https://facebook.com",
+              },
+              {
+                icon: FaGithub,
+                href: "https://github.com",
+              },
+              {
+                icon: LiaLinkedin,
+                href: "https://linkedin.com",
+              },
             ].map((social, index) => (
               <a
                 key={index}
                 href={social.href}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 aria-label="Social media"
                 className="rounded-xl border border-slate-800 p-3 transition hover:border-blue-500 hover:bg-blue-600 hover:text-white"
               >
@@ -79,11 +96,11 @@ const Footer = () => {
 
           <ul className="space-y-4 text-sm">
             {[
-              ['Home', '/'],
-              ['About Us', '/about'],
-              ['Doctors', '/doctors'],
-              ['Patients', '/patients'],
-              ['Contact', '/contact'],
+              ["Home", "/"],
+              ["About Us", "/about"],
+              ["Doctors", "/home/doctors"],
+              ["Patients", "/home/patients"],
+              ["Contact", "/contact"],
             ].map(([name, href]) => (
               <li key={name}>
                 <Link
@@ -106,11 +123,11 @@ const Footer = () => {
 
           <ul className="space-y-4 text-sm">
             {[
-              'Doctor Management',
-              'Patient Management',
-              'Medical Records',
-              'Healthcare Dashboard',
-              'Secure Administration',
+              "Doctor Management",
+              "Patient Management",
+              "Medical Records",
+              "Healthcare Dashboard",
+              "Secure Administration",
             ].map((service) => (
               <li key={service} className="flex items-center gap-2">
                 <Heart size={14} className="text-blue-500" />
@@ -157,11 +174,17 @@ const Footer = () => {
           </p>
 
           <div className="flex gap-6">
-            <Link href="/privacy" className="transition hover:text-blue-400">
+            <Link
+              href="/privacy"
+              className="transition hover:text-blue-400"
+            >
               Privacy Policy
             </Link>
 
-            <Link href="/terms" className="transition hover:text-blue-400">
+            <Link
+              href="/terms"
+              className="transition hover:text-blue-400"
+            >
               Terms & Conditions
             </Link>
           </div>
@@ -170,6 +193,17 @@ const Footer = () => {
       </div>
 
     </footer>
+  );
+};
+
+// Main Footer with Suspense
+const Footer = () => {
+  return (
+    <Suspense
+      fallback={<div className="h-0" />}
+    >
+      <FooterContent />
+    </Suspense>
   );
 };
 
