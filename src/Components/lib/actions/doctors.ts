@@ -78,7 +78,7 @@ export const getDoctor = async () => {
 };
 
 // get dynamic doctor
-export const getDoctorDetails=async (id)=>{
+export const getDoctorDetails=async (id:string)=>{
   const res = await fetch(`${baseUrl}/api/get/doctor/${id}`,{
 
     cache: "no-store",

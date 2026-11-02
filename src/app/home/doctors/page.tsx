@@ -130,7 +130,7 @@ const DoctorList = async () => {
 
               {/* Details Button */}
               <Link
-                href={`/home/doctors/${doctor.doctorId}`}
+                href={`/home/doctors/${doctor._id}`}
                 className="mt-3 flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 text-xs font-semibold transition-all duration-300"
               >
                 <Eye size={14} />
