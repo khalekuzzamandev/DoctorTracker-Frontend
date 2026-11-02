@@ -289,7 +289,7 @@ const DoctorData = async () => {
                     <td className="px-5 py-4">
                       <div className="flex items-center justify-center gap-2">
                         <Link
-                          href={`/home/doctors/${doctor.doctorId}`}
+                          href={`/home/doctors/${doctor._id}`}
                           title="View Doctor"
                           className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100"
                         >
