@@ -17,36 +17,53 @@ import {
   Banknote,
   VenusAndMars,
   BriefcaseMedical,
+  CalendarCheck,
+  ShieldCheck,
+  Hash,
 } from "lucide-react";
 
-const DoctorContent = async ({
-  params,
-}: {
+type DoctorContentProps = {
   params: Promise<{ id: string }>;
-}) => {
+};
+
+const DoctorContent = async ({ params }: DoctorContentProps) => {
   const { id } = await params;
   const doctor = await getDoctorDetails(id);
 
-  return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-6">
-      <div className="mx-auto max-w-6xl space-y-5">
+  const doctorInfo = [
+    { label: "Full Name", value: doctor.name, icon: UserRound },
+    { label: "Doctor ID", value: doctor.doctorId, icon: Hash },
+    { label: "Gender", value: doctor.gender, icon: VenusAndMars },
+    { label: "Specialization", value: doctor.specialization, icon: Stethoscope },
+    { label: "Qualification", value: doctor.qualification, icon: GraduationCap },
+    { label: "Experience", value: `${doctor.experience} Years`, icon: BriefcaseMedical },
+    { label: "Email Address", value: doctor.email, icon: Mail },
+    { label: "Consultation Fee", value: `৳ ${doctor.consultationFee}`, icon: Banknote },
+    { label: "Joining Date", value: doctor.joiningDate, icon: CalendarDays },
+    { label: "Status", value: doctor.status, icon: BadgeCheck },
+  ];
 
-        {/* Back Button */}
+  return (
+    <div className="min-h-screen bg-slate-50/80 p-4 md:p-6 lg:p-8">
+      <div className="mx-auto max-w-7xl space-y-6">
+
+        {/* Back Navigation */}
         <Link
           href="/home/doctors"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800"
+          className="inline-flex items-center gap-2 rounded-lg text-sm font-semibold text-slate-600 transition hover:text-blue-600"
         >
-          <ArrowLeft size={16} />
+          <ArrowLeft size={17} />
           Back to Doctors
         </Link>
 
-        {/* Doctor Header */}
+        {/* Doctor Profile Header */}
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="bg-gradient-to-r from-blue-50 via-white to-indigo-50 p-5 md:p-8">
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+
+          <div className="bg-gradient-to-r from-blue-50 via-white to-indigo-50 p-6 md:p-9">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center">
 
               {/* Profile Image */}
-              <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-blue-100 shadow-md">
+              <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-white bg-blue-100 shadow-lg">
                 {doctor.profileImage ? (
                   <img
                     src={doctor.profileImage}
@@ -58,15 +75,15 @@ const DoctorContent = async ({
                 )}
               </div>
 
-              {/* Doctor Information */}
-              <div className="flex-1 space-y-3">
+              {/* Basic Details */}
+              <div className="min-w-0 flex-1 space-y-3">
                 <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="text-2xl font-bold text-slate-900">
+                  <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
                     {doctor.name}
                   </h1>
 
-                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${doctor.status === "Active"
-                      ? "bg-green-100 text-green-700"
+                  <span className={`rounded-full px-3 py-1 text-xs font-bold ${doctor.status === "Active"
+                      ? "bg-emerald-100 text-emerald-700"
                       : "bg-red-100 text-red-700"
                     }`}>
                     {doctor.status}
@@ -77,12 +94,7 @@ const DoctorContent = async ({
                   {doctor.specialization}
                 </p>
 
-                <div className="grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
-                  <p className="flex items-center gap-2">
-                    <VenusAndMars size={16} className="text-blue-500" />
-                    {doctor.gender}
-                  </p>
-
+                <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-600">
                   <p className="flex items-center gap-2">
                     <Phone size={16} className="text-blue-500" />
                     {doctor.phone}
@@ -98,126 +110,157 @@ const DoctorContent = async ({
                     {doctor.hospital}
                   </p>
                 </div>
+
+                <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+                  <ShieldCheck size={15} className="text-emerald-600" />
+                  Doctor profile information
+                </div>
+              </div>
+
+              {/* Consultation Fee */}
+              <div className="rounded-xl border border-blue-100 bg-white p-5 shadow-sm md:min-w-40">
+                <p className="text-xs font-medium text-slate-500">
+                  Consultation Fee
+                </p>
+                <p className="mt-1 text-2xl font-bold text-blue-600">
+                  ৳ {doctor.consultationFee}
+                </p>
+                <p className="mt-1 text-xs text-slate-400">
+                  Per consultation
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Tabs */}
-          <div className="flex gap-6 border-t border-slate-200 px-6">
-            <button className="flex items-center gap-2 border-b-2 border-blue-600 py-4 text-sm font-semibold text-blue-600">
+          {/* Navigation Tabs */}
+          <div className="flex gap-7 border-t border-slate-100 px-6">
+            <div className="flex items-center gap-2 border-b-2 border-blue-600 py-4 text-sm font-bold text-blue-600">
               <UserRound size={16} />
               Overview
-            </button>
+            </div>
 
-            <button className="flex items-center gap-2 border-b-2 border-transparent py-4 text-sm font-medium text-slate-500">
-              <Clock size={16} />
+            <div className="flex items-center gap-2 border-b-2 border-transparent py-4 text-sm font-medium text-slate-400">
+              <CalendarDays size={16} />
               Availability
-            </button>
+            </div>
           </div>
         </div>
 
-        {/* Doctor Information */}
-        <div className="grid gap-5 lg:grid-cols-3">
+        {/* Main Content */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
 
-          {/* Personal Information */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
-            <h2 className="mb-5 flex items-center gap-2 text-lg font-bold text-slate-800">
-              <UserRound size={20} className="text-blue-600" />
-              Doctor Information
-            </h2>
+          {/* Doctor Information */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-7 lg:col-span-2">
 
-            <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
-              {[
-                ["Full Name", doctor.name],
-                ["Doctor ID", doctor.doctorId],
-                ["Gender", doctor.gender],
-                ["Specialization", doctor.specialization],
-                ["Qualification", doctor.qualification],
-                ["Experience", `${doctor.experience} Years`],
-                ["Hospital", doctor.hospital],
-                ["Phone Number", doctor.phone],
-                ["Email Address", doctor.email],
-                ["Consultation Fee", `৳ ${doctor.consultationFee}`],
-                ["Joining Date", doctor.joiningDate],
-                ["Status", doctor.status],
-              ].map(([label, value]) => (
-                <div key={label} className="border-b border-slate-100 pb-3">
-                  <p className="mb-1 text-xs font-medium text-slate-400">
-                    {label}
-                  </p>
-                  <p className="break-words text-sm font-semibold text-slate-700">
-                    {value || "N/A"}
-                  </p>
-                </div>
-              ))}
+            <div className="mb-7 flex items-center gap-3">
+              <div className="rounded-xl bg-blue-50 p-3 text-blue-600">
+                <UserRound size={21} />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-800">
+                  Doctor Information
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Personal and professional information
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+              {doctorInfo.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <div
+                    key={item.label}
+                    className="flex min-w-0 gap-3 border-b border-slate-100 pb-4"
+                  >
+                    <div className="h-fit rounded-lg bg-slate-50 p-2 text-blue-500">
+                      <Icon size={17} />
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="mb-1 text-xs font-medium text-slate-400">
+                        {item.label}
+                      </p>
+                      <p className="break-words text-sm font-semibold text-slate-700">
+                        {item.value || "N/A"}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Chamber Address */}
-            <div className="mt-6">
-              <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-500">
-                <MapPin size={17} className="text-blue-500" />
+            <div className="mt-7">
+              <h3 className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-700">
+                <MapPin size={18} className="text-blue-500" />
                 Chamber Address
-              </p>
-              <p className="rounded-lg bg-slate-50 p-4 text-sm text-slate-700">
-                {doctor.chamberAddress || "Address not available"}
-              </p>
+              </h3>
+
+              <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+                <p className="text-sm leading-6 text-slate-600">
+                  {doctor.chamberAddress || "Address not available"}
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Right Side */}
-          <div className="space-y-5">
+          {/* Right Sidebar */}
+          <div className="space-y-6">
 
             {/* Professional Summary */}
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="mb-5 flex items-center gap-2 font-bold text-slate-800">
-                <BriefcaseMedical size={19} className="text-blue-600" />
+              <h2 className="mb-6 text-lg font-bold text-slate-800">
                 Professional Details
               </h2>
 
               <div className="space-y-5">
-                <div className="flex items-start gap-3">
-                  <div className="rounded-lg bg-blue-50 p-2 text-blue-600">
-                    <GraduationCap size={20} />
+
+                <div className="flex items-center gap-3">
+                  <div className="rounded-xl bg-blue-50 p-3 text-blue-600">
+                    <GraduationCap size={21} />
                   </div>
                   <div>
                     <p className="text-xs text-slate-400">Qualification</p>
-                    <p className="text-sm font-semibold text-slate-700">
+                    <p className="mt-1 text-sm font-semibold text-slate-700">
                       {doctor.qualification || "N/A"}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="rounded-lg bg-purple-50 p-2 text-purple-600">
-                    <Stethoscope size={20} />
+                <div className="flex items-center gap-3">
+                  <div className="rounded-xl bg-purple-50 p-3 text-purple-600">
+                    <Stethoscope size={21} />
                   </div>
                   <div>
                     <p className="text-xs text-slate-400">Specialization</p>
-                    <p className="text-sm font-semibold text-slate-700">
-                      {doctor.specialization}
+                    <p className="mt-1 text-sm font-semibold text-slate-700">
+                      {doctor.specialization || "N/A"}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="rounded-lg bg-green-50 p-2 text-green-600">
-                    <BadgeCheck size={20} />
+                <div className="flex items-center gap-3">
+                  <div className="rounded-xl bg-emerald-50 p-3 text-emerald-600">
+                    <BriefcaseMedical size={21} />
                   </div>
                   <div>
                     <p className="text-xs text-slate-400">Experience</p>
-                    <p className="text-sm font-semibold text-slate-700">
+                    <p className="mt-1 text-sm font-semibold text-slate-700">
                       {doctor.experience} Years
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="rounded-lg bg-amber-50 p-2 text-amber-600">
-                    <Banknote size={20} />
+                <div className="flex items-center gap-3">
+                  <div className="rounded-xl bg-amber-50 p-3 text-amber-600">
+                    <Banknote size={21} />
                   </div>
                   <div>
                     <p className="text-xs text-slate-400">Consultation Fee</p>
-                    <p className="text-sm font-semibold text-slate-700">
+                    <p className="mt-1 text-sm font-semibold text-slate-700">
                       ৳ {doctor.consultationFee}
                     </p>
                   </div>
@@ -225,19 +268,28 @@ const DoctorContent = async ({
               </div>
             </div>
 
-            {/* Available Days */}
+            {/* Availability */}
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="mb-4 flex items-center gap-2 font-bold text-slate-800">
-                <CalendarDays size={19} className="text-blue-600" />
-                Available Days
-              </h2>
+              <div className="mb-5 flex items-center gap-3">
+                <div className="rounded-xl bg-blue-50 p-3 text-blue-600">
+                  <CalendarDays size={20} />
+                </div>
+                <div>
+                  <h2 className="font-bold text-slate-800">
+                    Available Days
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    Doctor&apos;s weekly schedule
+                  </p>
+                </div>
+              </div>
 
               <div className="flex flex-wrap gap-2">
                 {doctor.availableDays?.length > 0 ? (
                   doctor.availableDays.map((day: string) => (
                     <span
                       key={day}
-                      className="rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700"
+                      className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700"
                     >
                       {day}
                     </span>
@@ -247,6 +299,28 @@ const DoctorContent = async ({
                     No available days
                   </p>
                 )}
+              </div>
+
+              {/* Book Doctor Button */}
+              <div className="mt-6 border-t border-slate-100 pt-5">
+                <Link
+                  href={`/home/patients/book-appointment?doctorId=${doctor._id}`}
+                  className={`flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-bold text-white shadow-md transition duration-300 ${doctor.status === "Active"
+                      ? "bg-blue-600 shadow-blue-200 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg"
+                      : "pointer-events-none bg-slate-400"
+                    }`}
+                  aria-disabled={doctor.status !== "Active"}
+                  tabIndex={doctor.status === "Active" ? 0 : -1}
+                >
+                  <CalendarCheck size={19} />
+                  Book Doctor
+                </Link>
+
+                <p className="mt-3 text-center text-xs text-slate-400">
+                  {doctor.status === "Active"
+                    ? "Book your appointment with this doctor"
+                    : "This doctor is currently unavailable"}
+                </p>
               </div>
             </div>
 
@@ -265,8 +339,13 @@ export default function DoctorDetails({
   return (
     <Suspense
       fallback={
-        <div className="p-10 text-center text-sm text-slate-500">
-          Loading doctor details...
+        <div className="flex min-h-96 items-center justify-center">
+          <div className="text-center">
+            <div className="mx-auto mb-3 h-9 w-9 animate-spin rounded-full border-4 border-blue-100 border-t-blue-600" />
+            <p className="text-sm font-medium text-slate-500">
+              Loading doctor details...
+            </p>
+          </div>
         </div>
       }
     >
