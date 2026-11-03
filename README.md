@@ -45,7 +45,7 @@ The platform provides an organized way to manage doctor information and streamli
 
 ### Live Website
 
-[[https://gi-gnex.vercel.app/](https://doctor-tracker-frontend-51wb.vercel.app)](https://doctor-tracker-frontend-51wb.vercel.app/)
+[(https://doctor-tracker-frontend-51wb.vercel.app)](https://doctor-tracker-frontend-51wb.vercel.app/)
 
 ### Client Repository
 
