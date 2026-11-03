@@ -293,7 +293,9 @@ const DoctorData = async () => {
                         </Link>
 
                         {/* Edit Button */}
-                        <EditDoctor DoctorData={doctor} />
+                        <EditDoctor
+                          DoctorData={doctor as Parameters<typeof EditDoctor>[0]["DoctorData"]}
+                        />
 
                         <button
                           type="button"
