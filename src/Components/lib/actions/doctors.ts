@@ -88,3 +88,24 @@ export const getDoctorDetails=async (id:string)=>{
 
   return res.json();
 }
+
+
+
+// edit doctor
+export async function editDoctor(id: string, doctor: Partial<Doctor>) {
+  const res = await fetch(`${baseUrl}/api/update/doctor/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(doctor),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || !data.success) {
+    return { success: false, message: data.message };
+  }
+
+  revalidatePath("/dashboard/doctors");
+
+  return { success: true, message: data.message };
+}

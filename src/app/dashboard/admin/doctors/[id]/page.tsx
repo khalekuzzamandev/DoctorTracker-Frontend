@@ -1,9 +1,9 @@
-import React from 'react';
+"use client"
 
 const EditDoctor = () => {
   return (
     <div>
-      edit doctor
+      hello
     </div>
   );
 };
