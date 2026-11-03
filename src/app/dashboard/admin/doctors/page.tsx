@@ -6,11 +6,11 @@ import {
   Plus,
   Search,
   Eye,
-  Pencil,
   Trash2,
   Stethoscope,
   Users,
 } from "lucide-react";
+import EditDoctor from "@/Components/Dashboard/Doctor/EditDoctor";
 
 // Doctor Type
 interface DoctorType {
@@ -61,8 +61,7 @@ const DoctorData = async () => {
     (doctor) => doctor.status === "Active"
   ).length;
 
-  const specializationList: string[] =
-   Array.from(new Set<string>(doctors.map((doctor) =>doctor.specialization)));
+  const specializationList: string[] = Array.from(new Set<string>(doctors.map((doctor) =>doctor.specialization)));
 
   const hospitalList: string[] = Array.from(
     new Set<string>(
@@ -293,13 +292,8 @@ const DoctorData = async () => {
                           <Eye size={16} />
                         </Link>
 
-                        <Link
-                          href={`/dashboard/admin/doctors/${doctor.doctorId}`}
-                          title="Edit Doctor"
-                          className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
-                        >
-                          <Pencil size={15} />
-                        </Link>
+                        {/* Edit btn */}
+                        <EditDoctor/>
 
                         <button
                           type="button"
