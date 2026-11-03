@@ -45,15 +45,15 @@ The platform provides an organized way to manage doctor information and streamli
 
 ### Live Website
 
-[https://gi-gnex.vercel.app/](https://doctor-tracker-frontend-51wb.vercel.app/)
+[[https://gi-gnex.vercel.app/](https://doctor-tracker-frontend-51wb.vercel.app)](https://doctor-tracker-frontend-51wb.vercel.app/)
 
 ### Client Repository
 
-[https://github.com/muradvcv/GiGNEX](https://github.com/khalekuzzamandev/DoctorTracker-Frontend)
+[https://github.com/khalekuzzamandev/DoctorTracker-Frontend](https://github.com/khalekuzzamandev/DoctorTracker-Frontend)
 
 ### Server Repository
 
-[https://github.com/muradvcv/GiGNEX-BACKEND](https://github.com/khalekuzzamandev/DoctorTracker-Backend)
+[https://github.com/khalekuzzamandev/DoctorTracker-Backend](https://github.com/khalekuzzamandev/DoctorTracker-Backend)
 
 ---
 
