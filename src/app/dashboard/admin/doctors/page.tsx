@@ -292,8 +292,8 @@ const DoctorData = async () => {
                           <Eye size={16} />
                         </Link>
 
-                        {/* Edit btn */}
-                        <EditDoctor/>
+                        {/* Edit Button */}
+                        <EditDoctor DoctorData={doctor} />
 
                         <button
                           type="button"
