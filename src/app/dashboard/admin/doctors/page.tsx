@@ -11,6 +11,7 @@ import {
   Users,
 } from "lucide-react";
 import EditDoctor from "@/Components/Dashboard/Doctor/EditDoctor";
+import DeleteDoctor from "@/Components/Dashboard/Doctor/DeleteDoctor";
 
 // Doctor Type
 interface DoctorType {
@@ -297,13 +298,7 @@ const DoctorData = async () => {
                           DoctorData={doctor as Parameters<typeof EditDoctor>[0]["DoctorData"]}
                         />
 
-                        <button
-                          type="button"
-                          title="Delete Doctor"
-                          className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100"
-                        >
-                          <Trash2 size={15} />
-                        </button>
+                       <DeleteDoctor/>
                       </div>
                     </td>
                   </tr>
