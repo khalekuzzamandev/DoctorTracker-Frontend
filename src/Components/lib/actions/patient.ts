@@ -1,3 +1,5 @@
+import { string } from "better-auth";
+
 const baseUrl =process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:5000";
 
 // Add Patient
@@ -18,7 +20,7 @@ export const addPatient = async (patientData: object) => {
 };
 
 
-// get patient
+// get patients
 export const getAllPatient = async () => {
   const res = await fetch(`${baseUrl}/api/get/patient`, {
     cache: "no-store",
@@ -28,3 +30,9 @@ export const getAllPatient = async () => {
 
   return res.json();
 };
+
+// find one patient
+export const getPatientDetails=async(id:string)=>{
+  const res = await fetch(`${baseUrl}/api/get/patient/${id}`)
+  return res.json()
+}
