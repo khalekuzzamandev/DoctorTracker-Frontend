@@ -24,7 +24,7 @@ const DeleteDoctor = ({ onDelete }: DeleteDoctorProps) => {
       </Button>
 
       <Modal.Backdrop className="bg-slate-950/60 backdrop-blur-sm">
-        <Modal.Container className="flex items-center justify-center p-3">
+        <Modal.Container placement="center" className="p-3">
           <Modal.Dialog className="w-full max-w-[400px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
             <Modal.Header className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
               <div className="flex items-center gap-3">
@@ -47,17 +47,11 @@ const DeleteDoctor = ({ onDelete }: DeleteDoctorProps) => {
               </Modal.CloseTrigger>
             </Modal.Header>
 
-            <Modal.Body className="px-5 py-6">
-              <div className="text-center">
-                <h3 className="text-sm font-semibold text-slate-800">
-                  Are you sure you want to delete?
-                </h3>
-
-                <p className="mx-auto mt-2 max-w-[290px] text-xs leading-5 text-slate-500">
-                  This action cannot be undone. The selected record will be
-                  permanently deleted.
-                </p>
-              </div>
+            <Modal.Body className="px-5 py-4">
+              <p className="text-sm text-slate-600">
+                Are you sure you want to delete this doctor? This action cannot
+                be undone.
+              </p>
             </Modal.Body>
 
             <Modal.Footer className="flex items-center justify-end gap-2 border-t border-slate-100 bg-slate-50 px-5 py-4">
