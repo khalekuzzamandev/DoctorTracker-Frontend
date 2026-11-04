@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Button, Modal } from "@heroui/react";
 import {
   Pencil,
@@ -9,26 +10,15 @@ import {
   CalendarDays,
   UserRound,
   ChevronDown,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 import Image from "next/image";
+import { editDoctor, type Doctor } from "@/Components/lib/actions/doctors";
 
-interface DoctorType {
+interface DoctorType extends Doctor {
   _id: string;
-  name: string;
-  doctorId: string;
-  specialization: string;
-  gender: string;
-  hospital: string;
-  phone: string;
-  email: string;
-  chamberAddress: string;
-  qualification: string;
-  experience: number;
-  consultationFee: number;
-  joiningDate: string;
-  availableDays: string[];
-  status: string;
-  profileImage: string | null;
 }
 
 interface EditDoctorProps {
@@ -45,7 +35,6 @@ const weekDays = [
   "Saturday",
 ];
 
-/* Shared input styles */
 const inputClass =
   "h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all duration-200 hover:border-slate-300 hover:bg-white focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10";
 
@@ -53,16 +42,21 @@ const labelClass =
   "text-[11px] font-bold uppercase tracking-wide text-slate-500";
 
 const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
-  const [formData, setFormData] = useState<Partial<DoctorType>>({});
+  const [formData, setFormData] = useState<Partial<Doctor>>({});
+  const [isPending, startTransition] = useTransition();
+  const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleChange = (
-    field: keyof DoctorType,
-    value: string | number | string[] | null
+  const handleChange = <K extends keyof Doctor>(
+    field: K,
+    value: Doctor[K]
   ) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
+
+    setMessage("");
   };
 
   const handleDayChange = (day: string) => {
@@ -79,81 +73,41 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
   const selectedDays =
     formData.availableDays ?? DoctorData.availableDays ?? [];
 
-  const fields = [
-    {
-      label: "Doctor Name",
-      field: "name",
-      value: DoctorData.name.trim(),
-      type: "text",
-    },
-    {
-      label: "Doctor ID",
-      field: "doctorId",
-      value: DoctorData.doctorId.trim(),
-      type: "text",
-    },
-    {
-      label: "Specialization",
-      field: "specialization",
-      value: DoctorData.specialization,
-      type: "text",
-    },
-    {
-      label: "Hospital",
-      field: "hospital",
-      value: DoctorData.hospital.trim(),
-      type: "text",
-    },
-    {
-      label: "Phone Number",
-      field: "phone",
-      value: DoctorData.phone.trim(),
-      type: "text",
-    },
-    {
-      label: "Email Address",
-      field: "email",
-      value: DoctorData.email,
-      type: "email",
-    },
-    {
-      label: "Chamber Address",
-      field: "chamberAddress",
-      value: DoctorData.chamberAddress.trim(),
-      type: "text",
-    },
-    {
-      label: "Qualification",
-      field: "qualification",
-      value: DoctorData.qualification.trim(),
-      type: "text",
-    },
-    {
-      label: "Experience (Years)",
-      field: "experience",
-      value: String(DoctorData.experience),
-      type: "number",
-    },
-    {
-      label: "Consultation Fee",
-      field: "consultationFee",
-      value: String(DoctorData.consultationFee),
-      type: "number",
-    },
-  ] as const;
+  const fields: {
+    label: string;
+    field: keyof Doctor;
+    type: "text" | "email" | "number";
+  }[] = [
+      { label: "Doctor Name", field: "name", type: "text" },
+      { label: "Doctor ID", field: "doctorId", type: "text" },
+      { label: "Specialization", field: "specialization", type: "text" },
+      { label: "Hospital", field: "hospital", type: "text" },
+      { label: "Phone Number", field: "phone", type: "text" },
+      { label: "Email Address", field: "email", type: "email" },
+      { label: "Chamber Address", field: "chamberAddress", type: "text" },
+      { label: "Qualification", field: "qualification", type: "text" },
+      { label: "Experience (Years)", field: "experience", type: "number" },
+      { label: "Consultation Fee", field: "consultationFee", type: "number" },
+    ];
 
   const handleSubmit = () => {
-    const updatedDoctor = {
-      ...formData,
-      _id: DoctorData._id,
-    };
+    setMessage("");
 
-    console.log("Updated Doctor Data:", updatedDoctor);
+    startTransition(async () => {
+      const result = await editDoctor(DoctorData._id, formData);
+
+      setIsSuccess(result.success);
+      setMessage(
+        result.message ||
+        (result.success
+          ? "Doctor updated successfully!"
+          : "Failed to update doctor")
+      );
+    });
   };
 
   return (
     <Modal>
-      {/* Edit Button */}
       <Button
         isIconOnly
         variant="secondary"
@@ -166,6 +120,7 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
       <Modal.Backdrop className="bg-slate-950/60 backdrop-blur-sm">
         <Modal.Container placement="center" className="p-3">
           <Modal.Dialog className="w-full max-w-[680px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+
             {/* Header */}
             <Modal.Header className="flex items-center gap-3 border-b border-white/10 bg-gradient-to-r from-[#002855] to-[#0a4a8f] px-5 py-4 text-white">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/20 bg-white/10">
@@ -184,16 +139,15 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
 
               <div className="min-w-0 flex-1">
                 <Modal.Heading className="truncate text-base font-bold text-white">
-                  {DoctorData.name.trim()}
+                  {DoctorData.name}
                 </Modal.Heading>
 
                 <p className="mt-1 text-xs text-blue-200">
-                  Edit Doctor Information · {DoctorData.doctorId.trim()}
+                  Edit Doctor Information · {DoctorData.doctorId}
                 </p>
               </div>
 
-              {/* Red Close Button */}
-              <Modal.CloseTrigger className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-500 text-white shadow-md shadow-red-950/20 transition-all duration-200 hover:scale-110 hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/40 active:scale-95">
+              <Modal.CloseTrigger className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-500 text-white shadow-md transition-all hover:scale-110 hover:bg-red-700 active:scale-95">
                 <X size={18} strokeWidth={2.5} />
               </Modal.CloseTrigger>
             </Modal.Header>
@@ -214,27 +168,32 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
               <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
                 {fields.map((field) => (
                   <div key={field.field} className="flex flex-col gap-1.5">
-                    <label className={labelClass}>{field.label}</label>
+                    <label className={labelClass}>
+                      {field.label}
+                    </label>
 
                     <input
                       type={field.type}
-                      placeholder={field.value}
+                      min={field.type === "number" ? 0 : undefined}
+                      value={String(
+                        formData[field.field] ??
+                        DoctorData[field.field] ??
+                        ""
+                      )}
                       className={inputClass}
                       onChange={(e) => {
-                        const rawValue = e.target.value;
+                        const value = e.target.value;
 
                         if (field.type === "number") {
-                          if (rawValue === "") {
-                            setFormData((prev) => {
-                              const updated = { ...prev };
-                              delete updated[field.field];
-                              return updated;
-                            });
-                          } else {
-                            handleChange(field.field, Number(rawValue));
-                          }
+                          handleChange(
+                            field.field as "experience" | "consultationFee",
+                            (value === "" ? 0 : Number(value)) as never
+                          );
                         } else {
-                          handleChange(field.field, rawValue);
+                          handleChange(
+                            field.field as keyof Doctor,
+                            value as never
+                          );
                         }
                       }}
                     />
@@ -247,15 +206,16 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
 
                   <div className="relative">
                     <select
-                      value={formData.gender ?? ""}
+                      value={formData.gender ?? DoctorData.gender}
                       onChange={(e) =>
-                        handleChange("gender", e.target.value)
+                        handleChange(
+                          "gender",
+                          e.target.value as Doctor["gender"]
+                        )
                       }
                       className={`${inputClass} cursor-pointer appearance-none pr-10`}
                     >
-                      <option value="">
-                        {"Select Gender"}
-                      </option>
+                      <option value="">Select Gender</option>
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
                       <option value="Other">Other</option>
@@ -274,6 +234,12 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
 
                   <input
                     type="date"
+                    value={
+                      formData.joiningDate ??
+                      (DoctorData.joiningDate
+                        ? DoctorData.joiningDate.slice(0, 10)
+                        : "")
+                    }
                     className={inputClass}
                     onChange={(e) =>
                       handleChange("joiningDate", e.target.value)
@@ -294,15 +260,15 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
 
                   <div className="relative">
                     <select
-                      value={formData.status ?? ""}
+                      value={formData.status ?? DoctorData.status}
                       onChange={(e) =>
-                        handleChange("status", e.target.value)
+                        handleChange(
+                          "status",
+                          e.target.value as Doctor["status"]
+                        )
                       }
                       className={`${inputClass} cursor-pointer appearance-none pr-10`}
                     >
-                      <option value="">
-                        {DoctorData.status || "Select Status"}
-                      </option>
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
                     </select>
@@ -315,17 +281,21 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
                 </div>
 
                 {/* Profile Image */}
-                <div className="flex flex-col gap-1.5">
-                  <label className={labelClass}>Profile Image URL</label>
+                <div className="flex flex-col gap-1.5 sm:col-span-2">
+                  <label className={labelClass}>
+                    Profile Image URL
+                  </label>
 
                   <input
                     type="text"
+                    value={formData.profileImage ?? DoctorData.profileImage ?? ""}
+                    placeholder="Enter profile image URL"
                     className={inputClass}
-                    placeholder={
-                      DoctorData.profileImage ?? "No profile image"
-                    }
                     onChange={(e) =>
-                      handleChange("profileImage", e.target.value || null)
+                      handleChange(
+                        "profileImage",
+                        e.target.value || null
+                      )
                     }
                   />
                 </div>
@@ -335,7 +305,10 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
               <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50/70 p-4">
                 <div className="mb-3 flex items-center gap-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50">
-                    <CalendarDays size={16} className="text-blue-600" />
+                    <CalendarDays
+                      size={16}
+                      className="text-blue-600"
+                    />
                   </div>
 
                   <h3 className="text-sm font-bold text-slate-800">
@@ -372,6 +345,24 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
                   })}
                 </div>
               </div>
+
+              {/* Response Message */}
+              {message && (
+                <div
+                  className={`mt-4 flex items-center gap-2 rounded-xl border p-3 text-sm font-medium ${isSuccess
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                      : "border-red-200 bg-red-50 text-red-600"
+                    }`}
+                >
+                  {isSuccess ? (
+                    <CheckCircle2 size={17} />
+                  ) : (
+                    <AlertCircle size={17} />
+                  )}
+
+                  {message}
+                </div>
+              )}
             </Modal.Body>
 
             {/* Footer */}
@@ -379,6 +370,7 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
               <Button
                 slot="close"
                 variant="secondary"
+                isDisabled={isPending}
                 className="rounded-lg px-5 text-slate-600"
               >
                 Cancel
@@ -386,11 +378,20 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
 
               <Button
                 onPress={handleSubmit}
+                isDisabled={isPending}
                 className="rounded-lg bg-[#002855] px-6 font-semibold text-white shadow-md shadow-blue-900/20 transition-all hover:bg-blue-900"
               >
-                Update Doctor
+                {isPending ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  "Update Doctor"
+                )}
               </Button>
             </Modal.Footer>
+
           </Modal.Dialog>
         </Modal.Container>
       </Modal.Backdrop>

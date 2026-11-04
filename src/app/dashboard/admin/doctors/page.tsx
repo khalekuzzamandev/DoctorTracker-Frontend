@@ -6,7 +6,6 @@ import {
   Plus,
   Search,
   Eye,
-  Trash2,
   Stethoscope,
   Users,
 } from "lucide-react";

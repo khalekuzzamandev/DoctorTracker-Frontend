@@ -109,3 +109,5 @@ export async function editDoctor(id: string, doctor: Partial<Doctor>) {
 
   return { success: true, message: data.message };
 }
+
+// deleted doctor
