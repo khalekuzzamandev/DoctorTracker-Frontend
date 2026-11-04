@@ -297,7 +297,7 @@ const DoctorData = async () => {
                           DoctorData={doctor as Parameters<typeof EditDoctor>[0]["DoctorData"]}
                         />
 
-                       <DeleteDoctor/>
+                        <DeleteDoctor doctorId={doctor._id} />
                       </div>
                     </td>
                   </tr>

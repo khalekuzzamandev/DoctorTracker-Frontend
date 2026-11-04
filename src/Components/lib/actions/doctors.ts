@@ -105,9 +105,22 @@ export async function editDoctor(id: string, doctor: Partial<Doctor>) {
     return { success: false, message: data.message };
   }
 
-  revalidatePath("/dashboard/doctors");
+  revalidatePath("/");
 
   return { success: true, message: data.message };
 }
 
-// deleted doctor
+// Delete Doctor
+export const DeleteDoctor = async (id: string): Promise<ActionResult> => {
+  const res = await fetch(`${baseUrl}/api/delete/doctor/${id}`, {
+    method: "DELETE",
+  });
+
+  const data = await res.json();
+  revalidatePath("/dashboard/doctors");
+
+  return {
+    success: res.ok && data.success,
+    message: data.message,
+  };
+};

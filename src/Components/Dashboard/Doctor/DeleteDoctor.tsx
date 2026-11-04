@@ -1,15 +1,30 @@
+
 "use client";
 
+import { useTransition, useState } from "react";
 import { Button, Modal } from "@heroui/react";
-import { Trash2, X, AlertTriangle } from "lucide-react";
+import { Trash2, X, AlertTriangle, Loader2 } from "lucide-react";
+import { DeleteDoctor as deleteDoctorAction } from "@/Components/lib/actions/doctors";
 
 interface DeleteDoctorProps {
+  doctorId: string;
   onDelete?: () => void;
 }
 
-const DeleteDoctor = ({ onDelete }: DeleteDoctorProps) => {
+const DeleteDoctor = ({ doctorId, onDelete }: DeleteDoctorProps) => {
+  const [isPending, startTransition] = useTransition();
+  const [message, setMessage] = useState("");
+
   const handleDelete = () => {
-    onDelete?.();
+    startTransition(async () => {
+      const result = await deleteDoctorAction(doctorId);
+
+      setMessage(result.message || "");
+
+      if (result.success) {
+        onDelete?.();
+      }
+    });
   };
 
   return (
@@ -26,6 +41,7 @@ const DeleteDoctor = ({ onDelete }: DeleteDoctorProps) => {
       <Modal.Backdrop className="bg-slate-950/60 backdrop-blur-sm">
         <Modal.Container placement="center" className="p-3">
           <Modal.Dialog className="w-full max-w-[400px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+
             <Modal.Header className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-red-600">
@@ -36,6 +52,7 @@ const DeleteDoctor = ({ onDelete }: DeleteDoctorProps) => {
                   <Modal.Heading className="text-base font-bold text-slate-800">
                     Delete Confirmation
                   </Modal.Heading>
+
                   <p className="mt-1 text-xs text-slate-400">
                     This action requires confirmation
                   </p>
@@ -52,12 +69,19 @@ const DeleteDoctor = ({ onDelete }: DeleteDoctorProps) => {
                 Are you sure you want to delete this doctor? This action cannot
                 be undone.
               </p>
+
+              {message && (
+                <p className="mt-3 text-xs font-medium text-red-600">
+                  {message}
+                </p>
+              )}
             </Modal.Body>
 
             <Modal.Footer className="flex items-center justify-end gap-2 border-t border-slate-100 bg-slate-50 px-5 py-4">
               <Button
                 slot="close"
                 variant="secondary"
+                isDisabled={isPending}
                 className="rounded-lg px-5 font-medium text-slate-600"
               >
                 Cancel
@@ -65,12 +89,23 @@ const DeleteDoctor = ({ onDelete }: DeleteDoctorProps) => {
 
               <Button
                 onPress={handleDelete}
+                isDisabled={isPending}
                 className="flex items-center gap-2 rounded-lg bg-red-600 px-5 font-semibold text-white shadow-md shadow-red-600/20 transition-all hover:bg-red-700 active:scale-95"
               >
-                <Trash2 size={15} />
-                Delete
+                {isPending ? (
+                  <>
+                    <Loader2 size={15} className="animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 size={15} />
+                    Delete
+                  </>
+                )}
               </Button>
             </Modal.Footer>
+
           </Modal.Dialog>
         </Modal.Container>
       </Modal.Backdrop>
