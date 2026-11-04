@@ -117,7 +117,7 @@ export const DeleteDoctor = async (id: string): Promise<ActionResult> => {
   });
 
   const data = await res.json();
-  revalidatePath("/dashboard/doctors");
+  revalidatePath("/dashboard/admin/doctors");
 
   return {
     success: res.ok && data.success,
