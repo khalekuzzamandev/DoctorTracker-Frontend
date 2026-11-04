@@ -1,14 +1,14 @@
-
 "use client";
 
 import { useState } from "react";
-import { Button, Modal, Input } from "@heroui/react";
+import { Button, Modal } from "@heroui/react";
 import {
   Pencil,
   X,
   Stethoscope,
   CalendarDays,
   UserRound,
+  ChevronDown,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -44,6 +44,13 @@ const weekDays = [
   "Friday",
   "Saturday",
 ];
+
+/* Shared input styles */
+const inputClass =
+  "h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all duration-200 hover:border-slate-300 hover:bg-white focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10";
+
+const labelClass =
+  "text-[11px] font-bold uppercase tracking-wide text-slate-500";
 
 const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
   const [formData, setFormData] = useState<Partial<DoctorType>>({});
@@ -157,12 +164,11 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
       </Button>
 
       <Modal.Backdrop className="bg-slate-950/60 backdrop-blur-sm">
-        <Modal.Container className="flex items-center justify-center p-3">
-          <Modal.Dialog className="w-full max-w-[650px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
-
+        <Modal.Container placement="center" className="p-3">
+          <Modal.Dialog className="w-full max-w-[680px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
             {/* Header */}
-            <Modal.Header className="flex items-center gap-3 border-b border-white/10 bg-[#002855] px-5 py-4 text-white">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/15 bg-white/10">
+            <Modal.Header className="flex items-center gap-3 border-b border-white/10 bg-gradient-to-r from-[#002855] to-[#0a4a8f] px-5 py-4 text-white">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/20 bg-white/10">
                 {DoctorData.profileImage ? (
                   <Image
                     width={100}
@@ -193,10 +199,11 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
             </Modal.Header>
 
             {/* Body */}
-            <Modal.Body className="max-h-[65vh] overflow-y-auto px-5 py-4">
-
+            <Modal.Body className="max-h-[65vh] overflow-y-auto px-5 py-5">
               <div className="mb-4 flex items-center gap-2">
-                <Stethoscope size={17} className="text-blue-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50">
+                  <Stethoscope size={16} className="text-blue-600" />
+                </div>
 
                 <h3 className="text-sm font-bold text-slate-800">
                   Personal & Professional Information
@@ -204,16 +211,15 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
               </div>
 
               {/* Input Fields */}
-              <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
                 {fields.map((field) => (
-                  <div key={field.field} className="flex flex-col gap-1">
-                    <label className="text-xs font-semibold text-slate-600">
-                      {field.label}
-                    </label>
+                  <div key={field.field} className="flex flex-col gap-1.5">
+                    <label className={labelClass}>{field.label}</label>
 
-                    <Input
+                    <input
                       type={field.type}
                       placeholder={field.value}
+                      className={inputClass}
                       onChange={(e) => {
                         const rawValue = e.target.value;
 
@@ -236,90 +242,101 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
                 ))}
 
                 {/* Gender */}
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-slate-600">
-                    Gender
-                  </label>
+                <div className="flex flex-col gap-1.5">
+                  <label className={labelClass}>Gender</label>
 
-                  <select
-                    value={formData.gender ?? ""}
-                    onChange={(e) =>
-                      handleChange("gender", e.target.value)
-                    }
-                    className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition-all focus:border-blue-500"
-                  >
-                    <option value="">
-                      {DoctorData.gender || "Select Gender"}
-                    </option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={formData.gender ?? ""}
+                      onChange={(e) =>
+                        handleChange("gender", e.target.value)
+                      }
+                      className={`${inputClass} cursor-pointer appearance-none pr-10`}
+                    >
+                      <option value="">
+                        {"Select Gender"}
+                      </option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+
+                    <ChevronDown
+                      size={16}
+                      className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                    />
+                  </div>
                 </div>
 
                 {/* Joining Date */}
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-slate-600">
-                    Joining Date
-                  </label>
+                <div className="flex flex-col gap-1.5">
+                  <label className={labelClass}>Joining Date</label>
 
-                  <Input
+                  <input
                     type="date"
+                    className={inputClass}
                     onChange={(e) =>
                       handleChange("joiningDate", e.target.value)
                     }
                   />
 
-                  <p className="text-[10px] text-slate-400">
-                    Current Date: {DoctorData.joiningDate}
+                  <p className="text-[11px] text-slate-400">
+                    Current Date:{" "}
+                    <span className="font-semibold text-slate-500">
+                      {DoctorData.joiningDate}
+                    </span>
                   </p>
                 </div>
 
                 {/* Status */}
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-slate-600">
-                    Doctor Status
-                  </label>
+                <div className="flex flex-col gap-1.5">
+                  <label className={labelClass}>Doctor Status</label>
 
-                  <select
-                    value={formData.status ?? ""}
-                    onChange={(e) =>
-                      handleChange("status", e.target.value)
-                    }
-                    className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition-all focus:border-blue-500"
-                  >
-                    <option value="">
-                      {DoctorData.status || "Select Status"}
-                    </option>
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={formData.status ?? ""}
+                      onChange={(e) =>
+                        handleChange("status", e.target.value)
+                      }
+                      className={`${inputClass} cursor-pointer appearance-none pr-10`}
+                    >
+                      <option value="">
+                        {DoctorData.status || "Select Status"}
+                      </option>
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                    </select>
+
+                    <ChevronDown
+                      size={16}
+                      className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                    />
+                  </div>
                 </div>
 
                 {/* Profile Image */}
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-slate-600">
-                    Profile Image URL
-                  </label>
+                <div className="flex flex-col gap-1.5">
+                  <label className={labelClass}>Profile Image URL</label>
 
-                  <Input
+                  <input
+                    type="text"
+                    className={inputClass}
                     placeholder={
                       DoctorData.profileImage ?? "No profile image"
                     }
                     onChange={(e) =>
-                      handleChange(
-                        "profileImage",
-                        e.target.value || null
-                      )
+                      handleChange("profileImage", e.target.value || null)
                     }
                   />
                 </div>
               </div>
 
               {/* Available Days */}
-              <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+              <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50/70 p-4">
                 <div className="mb-3 flex items-center gap-2">
-                  <CalendarDays size={17} className="text-blue-600" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50">
+                    <CalendarDays size={16} className="text-blue-600" />
+                  </div>
 
                   <h3 className="text-sm font-bold text-slate-800">
                     Available Days
@@ -338,8 +355,8 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
                       <label
                         key={day}
                         className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2.5 text-xs font-semibold transition-all ${checked
-                          ? "border-blue-300 bg-blue-50 text-blue-700"
-                          : "border-slate-200 bg-white text-slate-500 hover:border-blue-200"
+                            ? "border-blue-300 bg-blue-50 text-blue-700 shadow-sm"
+                            : "border-slate-200 bg-white text-slate-500 hover:border-blue-200 hover:bg-blue-50/40"
                           }`}
                       >
                         <input
@@ -374,7 +391,6 @@ const EditDoctor = ({ DoctorData }: EditDoctorProps) => {
                 Update Doctor
               </Button>
             </Modal.Footer>
-
           </Modal.Dialog>
         </Modal.Container>
       </Modal.Backdrop>
