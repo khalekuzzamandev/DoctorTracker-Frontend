@@ -19,6 +19,7 @@ import {
 import Link from "next/link";
 
 import { getAllPatient } from "@/Components/lib/actions/patient";
+import DeletePatient from "@/Components/Dashboard/patient/DeletePatient";
 
 interface PatientType {
   _id: string;
@@ -480,19 +481,13 @@ const Patient = () => {
                           >
                             <Pencil size={16} />
                           </Link>
-                          <Link
-                            href={`/dashboard/admin/patients/${patient._id}`}
-                            title="View Patient Details"
-                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100"
-                          >
-                            <Trash2 size={16} />
-                          </Link>
+                          
+                          {/* deleted patient */}
+                          <DeletePatient/>
 
                         </div>
                       </td>
-
                     </tr>
-
                   ))}
 
                   {currentPatients.length === 0 && (
