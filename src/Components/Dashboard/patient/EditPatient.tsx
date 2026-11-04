@@ -1,10 +1,64 @@
 import React from 'react';
+import { Envelope } from "@gravity-ui/icons";
+import { Button, Input, Label, Modal, Surface, TextField } from "@heroui/react";
+import { Pencil } from 'lucide-react';
 
 const EditPatient = () => {
   return (
-    <div>
-      eidt patient
-    </div>
+    <Modal>
+      <Button variant="secondary" className={'flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}>
+        <Pencil size={16} />
+      </Button>
+      <Modal.Backdrop>
+        <Modal.Container placement="auto">
+          <Modal.Dialog className="sm:max-w-md">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Icon className="bg-accent-soft text-accent-soft-foreground">
+                <Envelope className="size-5" />
+              </Modal.Icon>
+              <Modal.Heading>Contact Us</Modal.Heading>
+              <p className="mt-1.5 text-sm leading-5 text-muted">
+                Fill out the form below and we&apos;ll get back to you. The modal adapts automatically
+                when the keyboard appears on mobile.
+              </p>
+            </Modal.Header>
+            <Modal.Body className="p-6">
+              <Surface variant="default">
+                <form className="flex flex-col gap-4">
+                  <TextField className="w-full" name="name" type="text" variant="secondary">
+                    <Label>Name</Label>
+                    <Input placeholder="Enter your name" />
+                  </TextField>
+                  <TextField className="w-full" name="email" type="email" variant="secondary">
+                    <Label>Email</Label>
+                    <Input placeholder="Enter your email" />
+                  </TextField>
+                  <TextField className="w-full" name="phone" type="tel" variant="secondary">
+                    <Label>Phone</Label>
+                    <Input placeholder="Enter your phone number" />
+                  </TextField>
+                  <TextField className="w-full" name="company" variant="secondary">
+                    <Label>Company</Label>
+                    <Input placeholder="Enter your company name" />
+                  </TextField>
+                  <TextField className="w-full" name="message" variant="secondary">
+                    <Label>Message</Label>
+                    <Input placeholder="Enter your message" />
+                  </TextField>
+                </form>
+              </Surface>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button slot="close" variant="secondary">
+                Cancel
+              </Button>
+              <Button slot="close">Send Message</Button>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
   );
 };
 

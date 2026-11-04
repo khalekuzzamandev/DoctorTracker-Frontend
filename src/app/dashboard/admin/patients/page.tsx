@@ -20,6 +20,7 @@ import Link from "next/link";
 
 import { getAllPatient } from "@/Components/lib/actions/patient";
 import DeletePatient from "@/Components/Dashboard/patient/DeletePatient";
+import EditPatient from "@/Components/Dashboard/patient/EditPatient";
 
 interface PatientType {
   _id: string;
@@ -474,13 +475,9 @@ const Patient = () => {
                           >
                             <Eye size={16} />
                           </Link>
-                          <Link
-                            href={`/dashboard/admin/patients/${patient._id}`}
-                            title="View Patient Details"
-                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
-                          >
-                            <Pencil size={16} />
-                          </Link>
+
+                        {/* edit patient */}
+                          <EditPatient/>
                           
                           {/* deleted patient */}
                           <DeletePatient/>
