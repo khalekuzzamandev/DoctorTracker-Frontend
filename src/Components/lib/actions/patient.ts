@@ -27,12 +27,13 @@ export const getAllPatient = async () => {
   });
 
   if (!res.ok) throw new Error("Failed to fetch patient");
-
   return res.json();
 };
+
 
 // find one patient
 export const getPatientDetails=async(id:string)=>{
   const res = await fetch(`${baseUrl}/api/get/patient/${id}`)
   return res.json()
 }
+

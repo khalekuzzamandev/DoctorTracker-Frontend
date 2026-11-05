@@ -1,11 +1,13 @@
-import { getAllPatient, getPatientDetails } from '@/Components/lib/actions/patient';
-import React from 'react';
 
-const PatientDetails = async ({ params }: { params: { id: string } }) => {
+import { getAllPatient, getPatientDetails } from "@/Components/lib/actions/patient";
+
+
+const PatientDetails = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = await params;
+
   const allPatients = await getAllPatient();
-  const patientDetails = await getPatientDetails(params.id);
+  const patientDetails = await getPatientDetails(id);
 
-  console.log(allPatients, patientDetails);
 
   return <div>hello its dynamic</div>;
 };
