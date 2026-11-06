@@ -1,3 +1,4 @@
+
 import { Suspense } from "react";
 import Link from "next/link";
 import { getPatientDetails } from "@/Components/lib/actions/patient";
@@ -47,7 +48,21 @@ const PatientDetailsContent = async ({
       .replace(/_/g, " ")
       .replace(/^./, (str) => str.toUpperCase());
 
-  // Doctor related data (nested object / populated field / flat id)
+  const formatDate = (value: unknown) => {
+    if (!value) return "N/A";
+
+    const date = new Date(String(value));
+
+    if (isNaN(date.getTime())) return String(value);
+
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  // Doctor related data
   const doctorRaw =
     patient.doctor ??
     patient.doctorInfo ??
@@ -59,53 +74,171 @@ const PatientDetailsContent = async ({
   const doctor =
     doctorRaw && typeof doctorRaw === "object" ? doctorRaw : null;
 
-  // Doctor-er info alada kora hoyeche, tai patient table theke bad
-  const doctorKeys = [
+  // Doctor & Appointment fields
+  const doctorIdValue =
+    (typeof patient.doctorId === "string" ? patient.doctorId : null) ??
+    patient.doctor_id ??
+    doctor?._id ??
+    doctor?.id ??
+    (typeof doctorRaw === "string" ? doctorRaw : null);
+
+  const doctorNameValue =
+    patient.doctorName ?? patient.doctor_name ?? doctor?.name ?? null;
+
+  const doctorEmailValue =
+    patient.doctorEmail ?? patient.doctor_email ?? doctor?.email ?? null;
+
+  const appointmentDateValue =
+    patient.appointmentDate ??
+    patient.appointment_date ??
+    patient.appointment?.date ??
+    null;
+
+  const doctorCardFields = [
+    {
+      label: "Doctor Id",
+      value: formatValue(doctorIdValue),
+      icon: "🆔",
+      color: "text-violet-600 dark:text-violet-400",
+    },
+    {
+      label: "Doctor Name",
+      value: formatValue(doctorNameValue),
+      icon: "👨‍⚕️",
+      color: "text-emerald-600 dark:text-emerald-400",
+    },
+    {
+      label: "Doctor Email",
+      value: formatValue(doctorEmailValue),
+      icon: "✉️",
+      color: "text-blue-600 dark:text-blue-400",
+    },
+    {
+      label: "Appointment Date",
+      value: formatDate(appointmentDateValue),
+      icon: "📅",
+      color: "text-orange-600 dark:text-orange-400",
+    },
+  ];
+
+  // Excluded fields from Patient Information
+  const excludedFields = [
+    "__v",
     "doctor",
     "doctorInfo",
     "doctorDetails",
     "assignedDoctor",
     "doctorId",
     "doctor_id",
+    "doctorName",
+    "doctor_name",
+    "doctorEmail",
+    "doctor_email",
+    "appointmentDate",
+    "appointment_date",
+    "appointment",
   ];
-
-  const excludedFields = ["__v", ...doctorKeys];
 
   const patientFields = Object.entries(patient).filter(
     ([key]) => !excludedFields.includes(key)
   );
 
-  const doctorExcluded = ["__v", "password", "token"];
+  // First column priority fields
+  const getPriority = (key: string) => {
+    const name = key.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-  const doctorFields: [string, unknown][] = doctor
-    ? Object.entries(doctor).filter(([key]) => !doctorExcluded.includes(key))
-    : typeof doctorRaw === "string" && doctorRaw
-      ? [["doctorId", doctorRaw]]
-      : [];
+    if (name === "id" || name === "patientid" || name.endsWith("id")) {
+      return 0;
+    }
+
+    if (name.includes("name")) return 1;
+    if (name.includes("email")) return 2;
+    if (name.includes("phone")) return 3;
+
+    if (
+      name.includes("medicalcondition") ||
+      name.includes("condition")
+    ) {
+      return 4;
+    }
+
+    return 99;
+  };
+
+  const firstColumnFields = patientFields
+    .filter(([key]) => getPriority(key) !== 99)
+    .sort(
+      ([keyA], [keyB]) => getPriority(keyA) - getPriority(keyB)
+    );
+
+  const firstColumnKeys = new Set(
+    firstColumnFields.map(([key]) => key)
+  );
+
+  const secondColumnFields = patientFields.filter(
+    ([key]) => !firstColumnKeys.has(key)
+  );
 
   const getFieldColor = (key: string) => {
     const name = key.toLowerCase();
 
-    if (name.includes("id")) return "text-violet-600 dark:text-violet-400";
-    if (name.includes("email") || name.includes("phone"))
+    if (name.includes("id")) {
+      return "text-violet-600 dark:text-violet-400";
+    }
+
+    if (name.includes("email") || name.includes("phone")) {
       return "text-blue-600 dark:text-blue-400";
-    if (name.includes("date") || name.includes("time"))
+    }
+
+    if (name.includes("date") || name.includes("time")) {
       return "text-orange-600 dark:text-orange-400";
-    if (name.includes("status"))
+    }
+
+    if (name.includes("status")) {
       return "text-emerald-600 dark:text-emerald-400";
-    if (name.includes("blood") || name.includes("medical"))
+    }
+
+    if (name.includes("blood") || name.includes("medical")) {
       return "text-rose-600 dark:text-rose-400";
-    if (name.includes("address")) return "text-amber-600 dark:text-amber-400";
+    }
+
+    if (name.includes("address")) {
+      return "text-amber-600 dark:text-amber-400";
+    }
 
     return "text-indigo-600 dark:text-indigo-400";
   };
+
+  // Reusable Patient Field
+  const renderPatientFields = (
+    fields: [string, unknown][]
+  ) => (
+    <div className="divide-y divide-blue-100 dark:divide-blue-900/30">
+      {fields.map(([key, value]) => (
+        <div
+          key={key}
+          className="flex min-w-0 items-center justify-between gap-3 px-3 py-3 transition hover:bg-indigo-500/5 sm:px-4"
+        >
+          <span
+            className={`shrink-0 text-[10px] font-bold uppercase tracking-wider ${getFieldColor(key)}`}
+          >
+            {formatLabel(key)}
+          </span>
+
+          <span className="min-w-0 break-words text-right text-xs font-semibold text-gray-800 dark:text-gray-100">
+            {formatValue(value)}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="mx-auto max-w-4xl space-y-4 p-4 sm:p-6">
       {/* Back Button */}
       <Link
         href="/dashboard/admin/patients"
-        className="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-95"
+        className="group inline-flex items-center gap-2 rounded-xl bg-[#0466c8]  text-white hover:-translate-y-1 hover:bg-blue-700 px-4 py-2 text-sm font-semibold  shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:shadow-xl active:scale-95"
       >
         <span className="transition-transform duration-300 group-hover:-translate-x-1">
           ←
@@ -113,129 +246,96 @@ const PatientDetailsContent = async ({
         Back to Patients
       </Link>
 
-      {/* ===== Card 1: Patient Information (TOP) ===== */}
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg shadow-gray-200/40 dark:border-gray-800 dark:bg-gray-950 dark:shadow-none">
-        {/* Header */}
-        <div className="relative flex flex-wrap items-center justify-between gap-3 overflow-hidden border-b border-gray-200 bg-gradient-to-r from-blue-600/10 via-indigo-500/10 to-purple-500/10 px-4 py-3 dark:border-gray-800">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 text-lg font-bold text-white shadow-md">
-              {String(patient.name ?? "P").charAt(0).toUpperCase()}
-            </div>
+      {/* Main Patient Card */}
+      <div className="space-y-4 overflow-hidden rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50/80 to-indigo-50/60 p-3 shadow-lg shadow-blue-200/30 sm:p-4 dark:border-blue-900/50 dark:from-blue-950/30 dark:to-indigo-950/20 dark:shadow-none">
 
-            <div>
-              <h1 className="text-base font-bold leading-tight">
-                {patient.name ?? "Patient"}
-              </h1>
-              <p className="text-[11px] text-gray-500">
-                ID: {String(patient._id)}
-              </p>
-            </div>
-          </div>
+        {/* Patient Information Heading */}
+        <div className="flex items-center justify-between px-1">
+          <h2 className="border-b-2 border-indigo-500 pb-1 text-sm font-bold text-gray-800 dark:text-gray-100">
+            Patient Information
+          </h2>
 
-          <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-            <span className="text-xs font-semibold capitalize text-emerald-600 dark:text-emerald-400">
-              {patient.status ?? "Patient Record"}
-            </span>
-          </div>
-        </div>
-
-        {/* Title row */}
-        <div className="flex items-center justify-between px-4 pt-3">
-          <h2 className="text-sm font-bold">Patient Information</h2>
-          <span className="rounded-md bg-indigo-500/10 px-2 py-1 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">
+          <span className="rounded-md bg-indigo-500/10 px-2.5 py-1 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">
             {patientFields.length} Fields
           </span>
         </div>
 
-        {/* Table */}
-        <div className="px-4 pb-4 pt-2">
-          <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-900/60">
-                <tr>
-                  <th className="w-1/3 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                    Field
-                  </th>
-                  <th className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                    Value
-                  </th>
-                </tr>
-              </thead>
+        {/* Patient Information - Two Columns in One Card */}
+        <div className="overflow-hidden rounded-xl border border-blue-200 bg-white/60 dark:border-blue-900/50 dark:bg-gray-950/40">
+          <div className="grid grid-cols-1 sm:grid-cols-2">
 
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                {patientFields.map(([key, value]) => (
-                  <tr
-                    key={key}
-                    className="transition-colors hover:bg-indigo-500/5"
-                  >
-                    <td
-                      className={`whitespace-nowrap px-3 py-2 text-[11px] font-bold uppercase tracking-wider ${getFieldColor(
-                        key
-                      )}`}
-                    >
-                      {formatLabel(key)}
-                    </td>
-                    <td className="break-words px-3 py-2 font-semibold text-gray-800 dark:text-gray-100">
-                      {formatValue(value)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {/* First Column: ID, Name, Email, Phone, Medical Condition */}
+            <div className="min-w-0">
+              {renderPatientFields(firstColumnFields)}
+            </div>
+
+            {/* Second Column: Remaining Fields */}
+            <div className="min-w-0 border-t border-blue-100 sm:border-l sm:border-t-0 dark:border-blue-900/30">
+              {renderPatientFields(secondColumnFields)}
+            </div>
+
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-800 dark:bg-gray-900/50">
-          <p className="text-[11px] text-gray-500">Complete Patient Record</p>
-          <p className="text-[11px] font-medium text-indigo-600 dark:text-indigo-400">
-            Patient Management System
-          </p>
-        </div>
-      </div>
+        {/* Doctor & Appointment Card */}
+        <div className="overflow-hidden rounded-xl border border-blue-200 bg-white/60 dark:border-blue-900/50 dark:bg-gray-950/40">
 
-      {/* ===== Card 2: Doctor Information (BOTTOM) ===== */}
-      <div className="overflow-hidden rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50/80 to-indigo-50/60 shadow-lg shadow-blue-200/30 dark:border-blue-900/50 dark:from-blue-950/30 dark:to-indigo-950/20 dark:shadow-none">
-        <div className="flex items-center justify-between border-b border-blue-200/70 px-4 py-3 dark:border-blue-900/40">
-          <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-sm text-white shadow">
-              🩺
+          {/* Doctor Card Header */}
+          <div className="flex items-center justify-between border-b border-blue-200/70 px-3 py-3 sm:px-4 dark:border-blue-900/40">
+            <div className="flex items-center gap-2">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0466c8] text-white shadow">
+                🩺
+              </span>
+
+              <h2 className="text-sm font-bold text-gray-800 dark:text-gray-100">
+                Doctor & Appointment
+              </h2>
+            </div>
+
+            <span className="rounded-md bg-blue-500/10 px-2.5 py-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+              {doctorCardFields.length} Fields
             </span>
-            <h2 className="text-sm font-bold">Doctor Information</h2>
           </div>
 
-          <span className="rounded-md bg-blue-500/10 px-2 py-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
-            {doctorFields.length} Fields
-          </span>
+          {/* Doctor Information Table */}
+          <div className="p-3 sm:p-4">
+            <div className="overflow-x-auto rounded-lg border border-blue-200 bg-white/70 dark:border-blue-900/40 dark:bg-gray-950/50">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-blue-50 dark:bg-blue-950/40">
+                  <tr>
+                    <th className="w-1/3 px-3 py-2.5 text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                      Field
+                    </th>
+
+                    <th className="px-3 py-2.5 text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                      Value
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-blue-100 dark:divide-blue-900/30">
+                  {doctorCardFields.map((field) => (
+                    <tr
+                      key={field.label}
+                      className="transition-colors hover:bg-blue-500/5"
+                    >
+                      <td
+                        className={`whitespace-nowrap px-3 py-3 text-[11px] font-bold uppercase tracking-wider ${field.color}`}
+                      >
+                        <span className="mr-1.5">{field.icon}</span>
+                        {field.label}
+                      </td>
+
+                      <td className="break-words px-3 py-3 text-xs font-semibold text-gray-800 dark:text-gray-100">
+                        {field.value}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-
-        {doctorFields.length > 0 ? (
-          <dl className="grid grid-cols-1 gap-x-6 px-4 py-2 sm:grid-cols-2">
-            {doctorFields.map(([key, value]) => (
-              <div
-                key={key}
-                className="flex min-w-0 items-baseline justify-between gap-3 border-b border-blue-100 py-2 last:border-0 dark:border-blue-900/30"
-              >
-                <dt
-                  className={`shrink-0 text-[10px] font-bold uppercase tracking-wider ${getFieldColor(
-                    key
-                  )}`}
-                >
-                  {formatLabel(key)}
-                </dt>
-
-                <dd className="min-w-0 truncate text-right text-sm font-semibold text-gray-800 dark:text-gray-100">
-                  {formatValue(value)}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        ) : (
-          <p className="px-4 py-4 text-sm text-gray-500">
-            No doctor assigned yet.
-          </p>
-        )}
       </div>
     </div>
   );
@@ -252,32 +352,45 @@ const PatientDetails = ({
         <div className="mx-auto max-w-4xl animate-pulse space-y-4 p-4 sm:p-6">
           <div className="h-9 w-36 rounded-xl bg-gray-200 dark:bg-gray-800" />
 
-          {/* Patient card skeleton */}
-          <div className="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800">
-            <div className="flex items-center gap-3 border-b p-4 dark:border-gray-800">
-              <div className="h-11 w-11 rounded-xl bg-gray-200 dark:bg-gray-800" />
-              <div className="space-y-2">
-                <div className="h-4 w-32 rounded bg-gray-200 dark:bg-gray-800" />
-                <div className="h-3 w-44 rounded bg-gray-200 dark:bg-gray-800" />
-              </div>
+          {/* Patient Card Skeleton */}
+          <div className="space-y-4 rounded-2xl border border-gray-200 p-3 sm:p-4 dark:border-gray-800">
+            <div className="flex items-center justify-between">
+              <div className="h-4 w-36 rounded bg-gray-200 dark:bg-gray-800" />
+              <div className="h-6 w-16 rounded bg-gray-200 dark:bg-gray-800" />
             </div>
 
-            <div className="space-y-2 p-4">
-              <div className="h-8 rounded-lg bg-gray-200 dark:bg-gray-800" />
-              {Array.from({ length: 7 }).map((_, index) => (
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {Array.from({ length: 8 }).map((_, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between border-b py-2 dark:border-gray-800"
+                  className="flex items-center justify-between rounded-lg border border-gray-200 px-3 py-3 dark:border-gray-800"
                 >
                   <div className="h-3 w-24 rounded bg-gray-200 dark:bg-gray-800" />
-                  <div className="h-4 w-40 rounded bg-gray-200 dark:bg-gray-800" />
+                  <div className="h-3 w-28 rounded bg-gray-200 dark:bg-gray-800" />
                 </div>
               ))}
             </div>
-          </div>
 
-          {/* Doctor card skeleton */}
-          <div className="h-36 rounded-2xl bg-gray-200 dark:bg-gray-800" />
+            {/* Doctor Card Skeleton */}
+            <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+              <div className="flex items-center gap-2 border-b p-3 dark:border-gray-800">
+                <div className="h-8 w-8 rounded-lg bg-gray-200 dark:bg-gray-800" />
+                <div className="h-4 w-40 rounded bg-gray-200 dark:bg-gray-800" />
+              </div>
+
+              <div className="space-y-3 p-3">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="h-3 w-28 rounded bg-gray-200 dark:bg-gray-800" />
+                    <div className="h-3 w-36 rounded bg-gray-200 dark:bg-gray-800" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       }
     >
